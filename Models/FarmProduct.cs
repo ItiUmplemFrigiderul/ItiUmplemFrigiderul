@@ -21,6 +21,9 @@ namespace ItiUmplemFrigiderul.Models
         [Required(ErrorMessage = "Stocul este obligatoriu")]
         public virtual int Stock { get; set; }
         public bool Verified { get; set; }//default false
+        public float Rating { get; set; }
+
+        public virtual ICollection<Review> Reviews { get; set; }
 
         [NotMapped]
         public IEnumerable<SelectListItem>? Prod { get; set; }
