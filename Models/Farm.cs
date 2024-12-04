@@ -24,11 +24,10 @@ namespace ItiUmplemFrigiderul.Models
         public string Adress { get; set; }
 
         [Required(ErrorMessage = "Grasu este obligatoriu")]
-        public int OwnerId { get; set; }
-        public virtual IdentityUser Owner { get; set; }
+        public string UserId { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
-
-
+        public virtual ICollection<FarmProduct>? FarmProducts { get; set; }
 
     }
 }

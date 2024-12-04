@@ -8,15 +8,12 @@ namespace ItiUmplemFrigiderul.Models
     public class Review
     {
         [Key]
-        public int FarmId { get; set; }
-        [Key]
-        public int ProductId { get; set; }
-        [Key]
-        public int UserId { get; set; }
-
-        public virtual Farm Farm { get; set; }
-        public virtual Product Product { get; set; }
-        public virtual IdentityUser User { get; set; }
+        public int Id { get; set; }
+        public int FarmProductId { get; set; }
+        public string UserId { get; set; }
+        [Required(ErrorMessage = "Produsul este obligatoriu")]
+        public virtual FarmProduct FarmProduct { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
         [Required(ErrorMessage = "Nota este obligatorie")]
         public int Rating { get; set; }

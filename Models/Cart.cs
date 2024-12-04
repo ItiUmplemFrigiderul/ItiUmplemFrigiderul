@@ -8,20 +8,11 @@ namespace ItiUmplemFrigiderul.Models
     public class Cart
     {
         [Key]
-        public int ProductId { get; set; }
-        [Key]
-        public int UserId { get; set; }
-        [Key]
-        public int FarmId { get; set; }
-
-        public virtual IdentityUser User{ get; set; }
-        public virtual Farm Farm { get; set; }
-        public virtual Product Product { get; set; }
-
-        public int? OrderId { get; set; }
-
-        public virtual Order? Order{ get; set; }
-
+        public int Id { get; set; }
+        public int FarmProductId { get; set; }
+        public string UserId { get; set; }
+        public virtual ApplicationUser User{ get; set; }
+        public virtual FarmProduct FarmProduct { get; set; }
 
         [Required(ErrorMessage = "Cantitatea este obligatorie")]
         public virtual float Quantity { get; set; }
