@@ -1,0 +1,22 @@
+﻿@model ItiUmplemFrigiderul.Models.Product
+
+@{
+    ViewData["Title"] = "View Product";
+}
+
+<h2>@Model.Name</h2>
+
+<div class="media">
+    <img class="mr-3" src="@Model.Photo" alt="@Model.Name" style="width: 200px;">
+    <div class="media-body">
+        <h5 class="mt-0">Description</h5>
+        @Model.Description
+    </div>
+</div>
+
+@* Displaying the user's rights and action buttons based on their roles *@
+@if (ViewBag.AfisareButoane)
+{
+    <a href="@Url.Action("Edit", "Products", new { id = Model.Id })" class="btn btn-warning">Edit</a>
+    <a href="@Url.Action("Delete", "Products", new { id = Model.Id })" class="btn btn-danger">Delete</a>
+}

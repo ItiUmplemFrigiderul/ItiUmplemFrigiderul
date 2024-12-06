@@ -1,83 +1,89 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ItiUmplemFrigiderul.Data;
+using ItiUmplemFrigiderul.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ItiUmplemFrigiderul.Controllers
 {
-    public class CartsController : Controller
+    [Authorize]
+    public class CartController : Controller
     {
-        // GET: CartsController
-        public ActionResult Index()
+        private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public CartController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            return View();
+            _db = context;
+            _userManager = userManager;
         }
 
-        // GET: CartsController/Details/5
-        public ActionResult Details(int id)
+        // GET: Cart
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var userId = _userManager.GetUserId(User);
+            var cartItems = await _db.Carts
+                                     .Where(c => c.UserId == userId)
+                                     .Include(c => c.FarmProduct)
+                                         .ThenInclude(fp => fp.Product)
+                                     .ToListAsync();
+
+            return View(cartItems);
         }
 
-        // GET: CartsController/Create
-        public ActionResult Create()
+        // GET: Cart/AddToCart/5
+        public async Task<IActionResult> AddToCart(int farmProductId, float quantity)
         {
-            return View();
-        }
+            var userId = _userManager.GetUserId(User);
+            var existingItem = await _db.Carts
+                                        .FirstOrDefaultAsync(c => c.UserId == userId && c.FarmProductId == farmProductId);
 
-        // POST: CartsController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+            if (existingItem != null)
             {
-                return RedirectToAction(nameof(Index));
+                existingItem.Quantity += quantity;
             }
-            catch
+            else
             {
-                return View();
+                var cartItem = new Cart
+                {
+                    FarmProductId = farmProductId,
+                    Quantity = quantity,
+                    UserId = userId
+                };
+                _db.Carts.Add(cartItem);
             }
+
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: CartsController/Edit/5
-        public ActionResult Edit(int id)
+        // GET: Cart/UpdateCart/5
+        public async Task<IActionResult> UpdateCart(int id, float quantity)
         {
-            return View();
+            var cartItem = await _db.Carts.FindAsync(id);
+            if (cartItem == null || cartItem.UserId != _userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
+
+            cartItem.Quantity = quantity;
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        // POST: CartsController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        // GET: Cart/RemoveFromCart/5
+        public async Task<IActionResult> RemoveFromCart(int id)
         {
-            try
+            var cartItem = await _db.Carts.FindAsync(id);
+            if (cartItem == null || cartItem.UserId != _userManager.GetUserId(User))
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
-            {
-                return View();
-            }
-        }
 
-        // GET: CartsController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: CartsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            _db.Carts.Remove(cartItem);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

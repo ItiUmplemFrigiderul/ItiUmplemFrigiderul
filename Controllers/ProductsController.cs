@@ -33,9 +33,9 @@ namespace ItiUmplemFrigiderul.Controllers
         public IActionResult Index()
         {
             var products = db.Products.Include("Category")
-                                      .Include("Farm")
                                       .Include("FarmProducts")
-                                      .OrderByDescending(a => a.Name);
+                                      .OrderByDescending(a => a.Name)
+                                      .ToList();
 
             // ViewBag.OriceDenumireSugestiva
             ViewBag.Products = products;
@@ -48,94 +48,94 @@ namespace ItiUmplemFrigiderul.Controllers
 
             // MOTOR DE CAUTARE
 
-            var search = "";
+            //var search = "";
 
-            if (Convert.ToString(HttpContext.Request.Query["search"]) != null)
-            {
-                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim(); // eliminam spatiile libere 
+            //if (Convert.ToString(HttpContext.Request.Query["search"]) != null)
+            //{
+            //    search = Convert.ToString(HttpContext.Request.Query["search"]).Trim(); // eliminam spatiile libere 
 
-                // Cautare in articol (Title si Content)
+            //    // Cautare in articol (Title si Content)
 
-                List<int> productsIds = db.Products.Where
-                                        (
-                                         at => at.Name.Contains(search)
-                                         || at.Category.CategoryName.Contains(search)
-                                        ).Select(a => a.Id).ToList();
+            //    List<int> productsIds = db.Products.Where
+            //                            (
+            //                             at => at.Name.Contains(search)
+            //                             || at.Category.CategoryName.Contains(search)
+            //                            ).Select(a => a.Id).ToList();
 
-                // Cautare in comentarii (Content)
-                List<int> productIdsOfReviewsWithSearchString = db.Reviews
-                                        .Where
-                                        (
-                                         c => c.Content.Contains(search)
-                                        ).Select(c => (int)c.FarmProduct.Id).ToList();
+            //    // Cautare in comentarii (Content)
+            //    List<int> productIdsOfReviewsWithSearchString = db.Reviews
+            //                            .Where
+            //                            (
+            //                             c => c.Content.Contains(search)
+            //                            ).Select(c => (int)c.FarmProduct.Id).ToList();
 
-                // Se formeaza o singura lista formata din toate id-urile selectate anterior
-                List<int> mergedIds = productsIds.Union(productIdsOfReviewsWithSearchString).ToList();
-
-
-                // Lista articolelor care contin cuvantul cautat
-                // fie in articol -> Title si Content
-                // fie in comentarii -> Content
-                products = db.Products.Where(product => mergedIds.Contains(product.Id))
-                                      .Include("Category")
-                                      .Include("Farm")
-                                      .Include("FarmProducts")
-                                      .OrderByDescending(a => a.Name);
-
-            }
-
-            ViewBag.SearchString = search;
-
-            // AFISARE PAGINATA
-
-            // Alegem sa afisam 3 articole pe pagina
-            int _perPage = 8;
-
-            // Fiind un numar variabil de articole, verificam de fiecare data utilizand 
-            // metoda Count()
-
-            int totalItems = products.Count();
-
-            // Se preia pagina curenta din View-ul asociat
-            // Numarul paginii este valoarea parametrului page din ruta
-            // /Articles/Index?page=valoare
-
-            var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
-
-            // Pentru prima pagina offsetul o sa fie zero
-            // Pentru pagina 2 o sa fie 3 
-            // Asadar offsetul este egal cu numarul de articole care au fost deja afisate pe paginile anterioare
-            var offset = 0;
-
-            // Se calculeaza offsetul in functie de numarul paginii la care suntem
-            if (!currentPage.Equals(0))
-            {
-                offset = (currentPage - 1) * _perPage;
-            }
-
-            // Se preiau articolele corespunzatoare pentru fiecare pagina la care ne aflam 
-            // in functie de offset
-            var paginatedProducts = products.Skip(offset).Take(_perPage);
+            //    // Se formeaza o singura lista formata din toate id-urile selectate anterior
+            //    List<int> mergedIds = productsIds.Union(productIdsOfReviewsWithSearchString).ToList();
 
 
-            // Preluam numarul ultimei pagini
-            ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
+            //    // Lista articolelor care contin cuvantul cautat
+            //    // fie in articol -> Title si Content
+            //    // fie in comentarii -> Content
+            //    products = db.Products.Where(product => mergedIds.Contains(product.Id))
+            //                          .Include("Category")
+            //                          .Include("Farm")
+            //                          .Include("FarmProducts")
+            //                          .OrderByDescending(a => a.Name);
 
-            // Trimitem articolele cu ajutorul unui ViewBag catre View-ul corespunzator
-            ViewBag.Products = paginatedProducts;
+            //}
 
-            // DACA AVEM AFISAREA PAGINATA IMPREUNA CU SEARCH
+            //ViewBag.SearchString = search;
 
-            if (search != "")
-            {
-                ViewBag.PaginationBaseUrl = "/Products/Index/?search=" + search + "&page";
-            }
-            else
-            {
-                ViewBag.PaginationBaseUrl = "/Products/Index/?page";
-            }
+            //// AFISARE PAGINATA
 
-            return View();
+            //// Alegem sa afisam 3 articole pe pagina
+            //int _perPage = 8;
+
+            //// Fiind un numar variabil de articole, verificam de fiecare data utilizand 
+            //// metoda Count()
+
+            //int totalItems = products.Count();
+
+            //// Se preia pagina curenta din View-ul asociat
+            //// Numarul paginii este valoarea parametrului page din ruta
+            //// /Articles/Index?page=valoare
+
+            //var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+
+            //// Pentru prima pagina offsetul o sa fie zero
+            //// Pentru pagina 2 o sa fie 3 
+            //// Asadar offsetul este egal cu numarul de articole care au fost deja afisate pe paginile anterioare
+            //var offset = 0;
+
+            //// Se calculeaza offsetul in functie de numarul paginii la care suntem
+            //if (!currentPage.Equals(0))
+            //{
+            //    offset = (currentPage - 1) * _perPage;
+            //}
+
+            //// Se preiau articolele corespunzatoare pentru fiecare pagina la care ne aflam 
+            //// in functie de offset
+            //var paginatedProducts = products.Skip(offset).Take(_perPage);
+
+
+            //// Preluam numarul ultimei pagini
+            //ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
+
+            //// Trimitem articolele cu ajutorul unui ViewBag catre View-ul corespunzator
+            //ViewBag.Products = paginatedProducts;
+
+            //// DACA AVEM AFISAREA PAGINATA IMPREUNA CU SEARCH
+
+            //if (search != "")
+            //{
+            //    ViewBag.PaginationBaseUrl = "/Products/Index/?search=" + search + "&page";
+            //}
+            //else
+            //{
+            //    ViewBag.PaginationBaseUrl = "/Products/Index/?page";
+            //}
+
+            return View(products);
         }
 
         [Authorize(Roles = "User,Collaborator,Admin")]
@@ -201,23 +201,18 @@ namespace ItiUmplemFrigiderul.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult New(Product product)
         {
-            var sanitizer = new HtmlSanitizer();
-
             if (ModelState.IsValid)
             {
+                var sanitizer = new HtmlSanitizer();
                 product.Description = sanitizer.Sanitize(product.Description);
-
                 db.Products.Add(product);
                 db.SaveChanges();
                 TempData["message"] = "Produsul a fost adaugat";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
-            else
-            {
-                product.Categ = GetAllCategories();
-                return View(product);
-            }
+            product.Categ = new SelectList(db.Categories, "Id", "CategoryName", product.CategoryId);
+            return View(product);
         }
 
 

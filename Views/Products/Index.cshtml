@@ -1,0 +1,42 @@
+﻿@model IEnumerable<ItiUmplemFrigiderul.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h2>Products</h2>
+
+@if (TempData["message"] != null)
+{
+    <div class="alert @TempData["messageType"]">
+        @TempData["message"]
+    </div>
+}
+
+<div class="container">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <img class="card-img-top" src="@item.Photo" alt="@item.Name">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">@item.Description</p>
+                        <a href="@Url.Action("Show", "Products", new { id = item.Id })" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Add Product Button visible only to Admins -->
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <a href="@Url.Action("New", "Products")" class="btn btn-success">Add New Product</a>
+            </div>
+        </div>
+    }
+</div>

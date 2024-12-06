@@ -1,83 +1,151 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ItiUmplemFrigiderul.Data;
+using ItiUmplemFrigiderul.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ItiUmplemFrigiderul.Controllers
 {
+    [Authorize]
     public class OrdersController : Controller
     {
-        // GET: OrdersController
-        public ActionResult Index()
+        private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public OrdersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            _db = context;
+            _userManager = userManager;
+        }
+
+        // GET: Orders
+        [Authorize(Roles = "User,Collaborator,Admin")]
+        public IActionResult Index()
+        {
+            var orders = _db.Orders
+                            .Include("User")
+                            .Include("ProductOrders")
+                            .Include("ProductId")
+                            .OrderByDescending(o => o.Date);
+
+            ViewBag.Orders = orders;
+
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Message = TempData["message"];
+                ViewBag.Alert = TempData["messageType"];
+            }
+
+            return View();
+        }
+
+        // GET: Orders/Details/5
+        [Authorize(Roles = "User,Collaborator,Admin")]
+        public IActionResult Details(int id)
+        {
+            var order = _db.Orders
+                           .Include("ProductOrders")
+                           .Include("ProductId")
+                           .FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return View(order);
+        }
+
+        // GET: Orders/Create
+        [Authorize(Roles = "User")]
+        public IActionResult Create()
         {
             return View();
         }
 
-        // GET: OrdersController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: OrdersController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: OrdersController/Create
+        // POST: Orders/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        [Authorize(Roles = "User")]
+        public IActionResult Create(Order order)
         {
-            try
+            if (ModelState.IsValid)
             {
+                order.UserId = _userManager.GetUserId(User);
+                order.Date = DateTime.Now;
+
+                _db.Orders.Add(order);
+                _db.SaveChanges();
+
+                TempData["message"] = "Order created successfully!";
+                TempData["messageType"] = "alert-success";
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(order);
         }
 
-        // GET: OrdersController/Edit/5
-        public ActionResult Edit(int id)
+        // GET: Orders/Edit/5
+        [Authorize(Roles = "Admin")]
+        public IActionResult Edit(int id)
         {
-            return View();
+            var order = _db.Orders.Find(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return View(order);
         }
 
-        // POST: OrdersController/Edit/5
+        // POST: Orders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [Authorize(Roles = "Admin")]
+        public IActionResult Edit(int id, Order updatedOrder)
         {
-            try
+            var order = _db.Orders.Find(id);
+            if (order == null)
             {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                order.Adress = updatedOrder.Adress;
+                order.Total = updatedOrder.Total;
+
+                _db.SaveChanges();
+
+                TempData["message"] = "Order updated successfully!";
+                TempData["messageType"] = "alert-success";
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(updatedOrder);
         }
 
-        // GET: OrdersController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: OrdersController/Delete/5
+        // POST: Orders/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [Authorize(Roles = "Admin")]
+        public IActionResult Delete(int id)
         {
-            try
+            var order = _db.Orders.Find(id);
+            if (order == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
-            {
-                return View();
-            }
+
+            _db.Orders.Remove(order);
+            _db.SaveChanges();
+
+            TempData["message"] = "Order deleted successfully!";
+            TempData["messageType"] = "alert-success";
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
