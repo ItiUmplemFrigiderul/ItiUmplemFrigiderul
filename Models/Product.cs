@@ -19,7 +19,7 @@ namespace ItiUmplemFrigiderul.Models
         [Required(ErrorMessage = "Categoria este obligatorie")]
         public int CategoryId { get; set; }
 
-        public virtual Category Category { get; set; }
+        public virtual Category? Category { get; set; }
 
         [NotMapped]
         public IEnumerable<SelectListItem>? Categ { get; set; }

@@ -23,7 +23,7 @@
                     <div class="card-body">
                         <h5 class="card-title">@item.Name</h5>
                         <p class="card-text">@item.Description</p>
-                        <a href="@Url.Action("Show", "Products", new { id = item.Id })" class="btn btn-primary">View Details</a>
+                        <a class="btn btn-success" asp-controller="Products" asp-action="Show" asp-route-id="@item.Id">dalea</a>
                     </div>
                 </div>
             </div>

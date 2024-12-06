@@ -142,12 +142,13 @@ namespace ItiUmplemFrigiderul.Controllers
         public IActionResult Show(int id)
         {
             Product product = db.Products.Include("Category")
-                                         .Include("Review")
-                                         .Include("Farm")
-                                         .Include("Reviews.User")
                               .Where(prd => prd.Id == id)
-                              .First();
-
+                              .FirstOrDefault();
+            if (product == null)
+            {
+                // If no product found, redirect to a different page or show an error message
+                return NotFound("Product not found");
+            }
             SetAccessRights();
             if (TempData.ContainsKey("message"))
             {
@@ -175,9 +176,7 @@ namespace ItiUmplemFrigiderul.Controllers
             else
             {
                 Product prd = db.Products.Include("Category")
-                                         .Include("Farm")
-                                         .Include("Review")
-                                         .Include("Reviews.User")
+                                         
                                          .Where(prd => prd.Id == review.FarmProductId)
                                          .First();
 
@@ -203,6 +202,7 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             if (ModelState.IsValid)
             {
+                
                 var sanitizer = new HtmlSanitizer();
                 product.Description = sanitizer.Sanitize(product.Description);
                 db.Products.Add(product);
@@ -211,7 +211,7 @@ namespace ItiUmplemFrigiderul.Controllers
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
-            product.Categ = new SelectList(db.Categories, "Id", "CategoryName", product.CategoryId);
+            product.Categ = GetAllCategories();
             return View(product);
         }
 
@@ -221,8 +221,6 @@ namespace ItiUmplemFrigiderul.Controllers
         {
 
             Product product = db.Products.Include("Category")
-                                         .Include("Farm")
-                                         .Include("FarmPeoducts")
                                          .Where(prd => prd.Id == id)
                                          .First();
 
@@ -289,8 +287,7 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             // Article product = db.Articles.Find(id);
 
-            Product product = db.Products.Include("Reviews")
-                                         .Include("FarmProducts")
+            Product product = db.Products
                                          .Where(art => art.Id == id)
                                          .First();
 

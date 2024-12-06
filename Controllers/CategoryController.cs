@@ -49,12 +49,12 @@ namespace ItiUmplemFrigiderul.Controllers
         // POST: Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> New([Bind("Id,CategoryName")] Category category)
+        public IActionResult New([Bind("Id,CategoryName")] Category category)
         {
             if (ModelState.IsValid)
             {
                 _db.Add(category);
-                await _db.SaveChangesAsync();
+                _db.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
             return View(category);

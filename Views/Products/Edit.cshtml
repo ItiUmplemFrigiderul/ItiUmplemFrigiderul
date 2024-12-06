@@ -25,7 +25,9 @@
     </div>
     <div class="form-group">
         <label asp-for="CategoryId">Category</label>
-        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categ"></select>
+        <select asp-for="CategoryId" class="form-control" asp-items="Model.Categ">
+            <option value="">Selectati categoria</option>
+        </select>
     </div>
     <button type="submit" class="btn btn-success">Update</button>
 </form>

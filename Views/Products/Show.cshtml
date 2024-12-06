@@ -17,6 +17,15 @@
 @* Displaying the user's rights and action buttons based on their roles *@
 @if (ViewBag.AfisareButoane)
 {
-    <a href="@Url.Action("Edit", "Products", new { id = Model.Id })" class="btn btn-warning">Edit</a>
-    <a href="@Url.Action("Delete", "Products", new { id = Model.Id })" class="btn btn-danger">Delete</a>
+    <div class="d-flex flex-row justify-content-between">
+
+        <a class="btn btn-success" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Id">Editeaza grasu</a>
+
+        <form method="post" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Id">
+
+            <button class="btn btn-danger" type="submit">Sterge grasu</button>
+
+        </form>
+
+    </div>
 }
