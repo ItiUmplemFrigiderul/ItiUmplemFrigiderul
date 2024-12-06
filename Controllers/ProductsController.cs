@@ -12,7 +12,6 @@ namespace ItiUmplemFrigiderul.Controllers
     [Authorize]
     public class ProductsController : Controller
     {
-        // PASUL 10: useri si roluri 
 
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -35,6 +34,7 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             var products = db.Products.Include("Category")
                                       .Include("Farm")
+                                      .Include("FarmProducts")
                                       .OrderByDescending(a => a.Name);
 
             // ViewBag.OriceDenumireSugestiva
@@ -67,7 +67,7 @@ namespace ItiUmplemFrigiderul.Controllers
                                         .Where
                                         (
                                          c => c.Content.Contains(search)
-                                        ).Select(c => (int)c.FarmProduct.ProductId).ToList();
+                                        ).Select(c => (int)c.FarmProduct.Id).ToList();
 
                 // Se formeaza o singura lista formata din toate id-urile selectate anterior
                 List<int> mergedIds = productsIds.Union(productIdsOfReviewsWithSearchString).ToList();
@@ -79,6 +79,7 @@ namespace ItiUmplemFrigiderul.Controllers
                 products = db.Products.Where(product => mergedIds.Contains(product.Id))
                                       .Include("Category")
                                       .Include("Farm")
+                                      .Include("FarmProducts")
                                       .OrderByDescending(a => a.Name);
 
             }
@@ -185,7 +186,7 @@ namespace ItiUmplemFrigiderul.Controllers
             }
         }
 
-        [Authorize(Roles = "Collaborator,Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult New()
         {
             Product product = new Product();
@@ -225,6 +226,8 @@ namespace ItiUmplemFrigiderul.Controllers
         {
 
             Product product = db.Products.Include("Category")
+                                         .Include("Farm")
+                                         .Include("FarmPeoducts")
                                          .Where(prd => prd.Id == id)
                                          .First();
 
@@ -263,6 +266,7 @@ namespace ItiUmplemFrigiderul.Controllers
 
                     product.Photo = requestProduct.Photo;
                     product.CategoryId = requestProduct.CategoryId;
+                    product.FarmProducts = requestProduct.FarmProducts;
                     TempData["message"] = "Produsul a fost modificat";
                     TempData["messageType"] = "alert-success";
                     db.SaveChanges();
@@ -315,7 +319,7 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             ViewBag.AfisareButoane = false;
 
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole("Admin")||User.IsInRole("Collaborator"))
             {
                 ViewBag.AfisareButoane = true;
             }
@@ -324,6 +328,7 @@ namespace ItiUmplemFrigiderul.Controllers
 
             ViewBag.EsteAdmin = User.IsInRole("Admin");
         }
+
         [NonAction]
         public IEnumerable<SelectListItem> GetAllCategories()
         {
