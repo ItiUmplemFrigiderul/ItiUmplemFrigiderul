@@ -69,10 +69,10 @@ namespace ItiUmplemFrigiderul.Data
             .WithMany(ac => ac.ProductOrders)
             .HasForeignKey(ac => ac.FarmProductId);
 
-            modelBuilder.Entity<Farm>()
-            .HasOne<ApplicationUser>(a => a.User)
-            .WithOne(c => c.Farm)
-            .HasForeignKey<Farm>(a => a.UserId);
+            //modelBuilder.Entity<Farm>()
+            //.HasOne(a => a.User)
+            //.WithMany(c => c.Farms)
+            //.HasForeignKey(a => a.UserId);
 
             modelBuilder.Entity<Cart>()
             .HasOne<ApplicationUser>(a => a.User)

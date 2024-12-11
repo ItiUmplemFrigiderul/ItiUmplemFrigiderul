@@ -4,6 +4,7 @@ using ItiUmplemFrigiderul.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ItiUmplemFrigiderul.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241211173358_M2")]
+    partial class M2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -160,12 +163,7 @@ namespace ItiUmplemFrigiderul.Data.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Farms");
                 });
@@ -477,15 +475,6 @@ namespace ItiUmplemFrigiderul.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ItiUmplemFrigiderul.Models.Farm", b =>
-                {
-                    b.HasOne("ItiUmplemFrigiderul.Models.ApplicationUser", "User")
-                        .WithMany("Farms")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ItiUmplemFrigiderul.Models.FarmProduct", b =>
                 {
                     b.HasOne("ItiUmplemFrigiderul.Models.Farm", "Farm")
@@ -618,8 +607,6 @@ namespace ItiUmplemFrigiderul.Data.Migrations
                 {
                     b.Navigation("Cart")
                         .IsRequired();
-
-                    b.Navigation("Farms");
 
                     b.Navigation("Orders");
 

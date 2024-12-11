@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ItiUmplemFrigiderul.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241204183400_M1please")]
-    partial class M1please
+    [Migration("20241211172617_M1")]
+    partial class M1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -121,7 +121,7 @@ namespace ItiUmplemFrigiderul.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Cart");
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("ItiUmplemFrigiderul.Models.Category", b =>
@@ -164,13 +164,11 @@ namespace ItiUmplemFrigiderul.Data.Migrations
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Farms");
                 });
@@ -237,7 +235,7 @@ namespace ItiUmplemFrigiderul.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("ItiUmplemFrigiderul.Models.Product", b =>
@@ -293,7 +291,7 @@ namespace ItiUmplemFrigiderul.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("ProductOrder");
+                    b.ToTable("ProductOrders");
                 });
 
             modelBuilder.Entity("ItiUmplemFrigiderul.Models.Review", b =>
@@ -485,10 +483,8 @@ namespace ItiUmplemFrigiderul.Data.Migrations
             modelBuilder.Entity("ItiUmplemFrigiderul.Models.Farm", b =>
                 {
                     b.HasOne("ItiUmplemFrigiderul.Models.ApplicationUser", "User")
-                        .WithOne("Farm")
-                        .HasForeignKey("ItiUmplemFrigiderul.Models.Farm", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Farms")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -626,7 +622,7 @@ namespace ItiUmplemFrigiderul.Data.Migrations
                     b.Navigation("Cart")
                         .IsRequired();
 
-                    b.Navigation("Farm");
+                    b.Navigation("Farms");
 
                     b.Navigation("Orders");
 

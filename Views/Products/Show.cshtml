@@ -20,7 +20,7 @@
     <div class="d-flex flex-row justify-content-between">
 
         <a class="btn btn-success" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Id">Editeaza grasu</a>
-
+        <a href="/Products/Index" class="btn btn-secondary">Inapoi la lista</a>
         <form method="post" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Id">
 
             <button class="btn btn-danger" type="submit">Sterge grasu</button>

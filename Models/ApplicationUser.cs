@@ -12,7 +12,8 @@ namespace ItiUmplemFrigiderul.Models
 
         public virtual ICollection<Review>? Reviews { get; set; }
         public virtual ICollection<Order>? Orders { get; set; }
-        public virtual Farm? Farm { get; set; }
+        public virtual ICollection<Farm>? Farms { get; set; }
+
         public virtual Cart Cart { get; set; }
 
 

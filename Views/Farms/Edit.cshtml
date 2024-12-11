@@ -6,7 +6,7 @@
 
 <h2>Edit Farm</h2>
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
+<form asp-action="Edit" method="post" asp-controller="Farms">
     <input type="hidden" asp-for="Id" />
     <div class="form-group">
         <label asp-for="Name"></label>
@@ -23,5 +23,5 @@
         <textarea asp-for="Adress" class="form-control"></textarea>
         <span asp-validation-for="Adress" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-success">Update</button>
+    <button type="submit" class="btn btn-success">Save</button>
 </form>

@@ -1,5 +1,49 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<ItiUmplemFrigiderul.Models.Farm>
+
 @{
+    ViewData["Title"] = "Farm";
 }
+
+<h2>Farms</h2>
+
+@if (TempData["message"] != null)
+{
+    <div class="alert @TempData["messageType"]">
+        @TempData["message"]
+    </div>
+}
+
+<div class="container">
+    <div class="row">
+        @foreach (var farm in Model)
+        {
+            <div class="card" style="width:33%; height:33%">
+                <div class="card-body">
+                    <h3 class="card-title alert-success py-3 px-3 rounded2">@farm.Name</h3>
+                    <div class="card-text">@farm.PhoneNumber</div>
+                    <div class="d-flex justify-content-between flex-row mt-5">
+                        <div>
+                            <i class="bi bi-globe"></i>
+                            @farm.User.UserName
+                        </div>
+                        <a class="btn btn-success"
+                           href="/Farms/Show/@farm.Id">Afisare ferma</a>
+                    </div>
+                </div>
+
+            </div>
+            <br />
+            <br />
+        }
+    </div>
+
+    <!-- Add Product Button visible only to Admins -->
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <a href="@Url.Action("New", "Farms")" class="btn btn-success">Add New Farm</a>
+            </div>
+        </div>
+    }
+</div>

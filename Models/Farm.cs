@@ -23,9 +23,8 @@ namespace ItiUmplemFrigiderul.Models
         [Required(ErrorMessage = "Adresa este obligatorie")]
         public string Adress { get; set; }
 
-        [Required(ErrorMessage = "Grasu este obligatoriu")]
-        public string UserId { get; set; }
-        public virtual ApplicationUser User { get; set; }
+        public string? UserId { get; set; }
+        public virtual ApplicationUser? User { get; set; }
 
         public virtual ICollection<FarmProduct>? FarmProducts { get; set; }
 

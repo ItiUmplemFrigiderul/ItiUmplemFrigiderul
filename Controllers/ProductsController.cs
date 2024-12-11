@@ -268,7 +268,7 @@ namespace ItiUmplemFrigiderul.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult Edit(int id, Product requestProduct)
+        public async Task<IActionResult> Edit(int id, Product requestProduct)
         {
             var sanitizer = new HtmlSanitizer();
 
