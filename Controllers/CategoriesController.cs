@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 namespace ItiUmplemFrigiderul.Controllers
 {
     [Authorize(Roles = "Admin")]  // Restrict access to administrators
-    public class CategoryController : Controller
+    public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _db;
 
-        public CategoryController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context)
         {
             _db = context;
         }
@@ -22,7 +22,7 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(await _db.Categories.ToListAsync());
         }
 
-        // GET: Category/Details/5
+        
         public async Task<IActionResult> Show(int? id)
         {
             if (id == null)
@@ -40,7 +40,7 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(category);
         }
 
-        // GET: Category/Create
+        
         public IActionResult New()
         {
             return View();
@@ -60,7 +60,7 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(category);
         }
 
-        // GET: Category/Edit/5
+        
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -76,7 +76,7 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(category);
         }
 
-        // POST: Category/Edit/5
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CategoryName")] Category category)
@@ -109,7 +109,6 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(category);
         }
 
-        // GET: Category/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -127,10 +126,11 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(category);
         }
 
-        // POST: Category/Delete/5
-        [HttpPost, ActionName("Delete")]
+
+        //[HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var category = await _db.Categories.FindAsync(id);
             _db.Categories.Remove(category);

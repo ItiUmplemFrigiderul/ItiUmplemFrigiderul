@@ -12,7 +12,7 @@ namespace ItiUmplemFrigiderul.Models
         [Required(ErrorMessage = "Numele este obligatoriu")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Poza este obligatorie")]
+        //[Required(ErrorMessage = "Poza este obligatorie")]
         public string Photo { get; set; }
 
         public string Description { get; set; }

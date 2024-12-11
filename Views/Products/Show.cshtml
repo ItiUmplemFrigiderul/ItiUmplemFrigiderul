@@ -29,3 +29,46 @@
 
     </div>
 }
+
+
+@*Adaugare review
+ <div class="container">
+
+     <div class="row">
+
+         <div class="col-md-2"></div>
+
+         <div class="col-md-8">
+
+             <div class="card">
+
+                 <form method="post" asp-controller="Products" asp-action="Show">
+
+                     <div class="card-body">
+
+                         <input type="hidden" name="ProductId" value="@Model.Id" />
+
+                         <label>Continut review</label>
+                         <br />
+
+                         <textarea class="form-control" name="Content"></textarea>
+
+                         <span asp-validation-for="Content" class="text-danger"></span>
+                         <br /><br />
+
+                         <button class="btn btn-success" type="submit">Adauga comentariul</button>
+
+                     </div>
+
+                 </form>
+
+             </div>
+
+         </div>
+
+         <div class="col-md-2"></div>
+
+     </div>
+
+ </div>
+*@

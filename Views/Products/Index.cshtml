@@ -15,18 +15,40 @@
 
 <div class="container">
     <div class="row">
-        @foreach (var item in Model)
+        @foreach (var product in Model)
         {
-            <div class="col-md-4">
-                <div class="card">
-                    <img class="card-img-top" src="@item.Photo" alt="@item.Name">
-                    <div class="card-body">
-                        <h5 class="card-title">@item.Name</h5>
-                        <p class="card-text">@item.Description</p>
-                        <a class="btn btn-success" asp-controller="Products" asp-action="Show" asp-route-id="@item.Id">dalea</a>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title alert-success py-3 px-3 rounded2">@product.Name</h3>
+                    @if (product.Photo.Contains(".mp4") ||  product.Photo.Contains(".mov"))
+                    {
+                        <video width="550" height="300" controls>
+                            <source src="@product.Photo" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    }
+                    else
+                    {
+                        <div class="text-center">
+                            <img src="@product.Photo" alt="Product Image"
+                                 class="img-fluid rounded mb-3 shadow"
+                                 style="width: 100%; max-width: 300px; height: auto; object-fit: cover; border-radius: 15px;">
+                            
+                        </div>
+                    }
+                    <div class="card-text">@product.Description</div>
+                    <div class="d-flex justify-content-between flex-row mt-5">
+                        <div>
+                            <i class="bi bi-globe"></i>
+                            @product.Category.CategoryName
+                        </div>
+                        <a class="btn btn-success"
+                           href="/Products/Show/@product.Id">Afisare produs</a>
                     </div>
                 </div>
             </div>
+            <br />
+            <br />
         }
     </div>
 

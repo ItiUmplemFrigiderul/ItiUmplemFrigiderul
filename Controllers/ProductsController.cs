@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Ganss.Xss;
+using System.Net.NetworkInformation;
 
 namespace ItiUmplemFrigiderul.Controllers
 {
@@ -16,15 +17,18 @@ namespace ItiUmplemFrigiderul.Controllers
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IWebHostEnvironment _env;
         public ProductsController(
         ApplicationDbContext context,
         UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager
+        RoleManager<IdentityRole> roleManager,
+        IWebHostEnvironment env
         )
         {
             db = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _env = env;
         }
 
 
@@ -198,9 +202,32 @@ namespace ItiUmplemFrigiderul.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult New(Product product)
+        public async Task<IActionResult> New(Product product, IFormFile Photo)
         {
-            if (ModelState.IsValid)
+            if (Photo != null && Photo.Length > 0)
+            {
+                // Verificăm extensia
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov" };
+                var fileExtension = Path.GetExtension(Photo.FileName).ToLower();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    ModelState.AddModelError("ProductPhoto", "Fișierul trebuie să fie o imagine(jpg, jpeg, png, gif) sau un video(mp4, mov).");
+                return View(product);
+                }
+               
+                // Cale stocare
+                var storagePath = Path.Combine(_env.WebRootPath, "images", Photo.FileName);
+                var databaseFileName = "/images/" + Photo.FileName;
+                // Salvare fișier
+                using (var fileStream = new FileStream(storagePath, FileMode.Create))
+                {
+                    await Photo.CopyToAsync(fileStream);
+                }
+                ModelState.Remove(nameof(product.Photo));
+                product.Photo = databaseFileName;
+
+            }
+            if (TryValidateModel(product))
             {
                 
                 var sanitizer = new HtmlSanitizer();

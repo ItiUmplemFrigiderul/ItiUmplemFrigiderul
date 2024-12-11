@@ -1,21 +1,23 @@
-﻿using Ganss.Xss;
-using ItiUmplemFrigiderul.Data;
+﻿using ItiUmplemFrigiderul.Data;
 using ItiUmplemFrigiderul.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Ganss.Xss;
+using System.Net.NetworkInformation;
 
 namespace ItiUmplemFrigiderul.Controllers
 {
-    public class FarmsController : Controller
+    [Authorize]
+    public class FarmController : Controller
     {
+
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public FarmsController(
+        public FarmController(
         ApplicationDbContext context,
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager
@@ -31,10 +33,10 @@ namespace ItiUmplemFrigiderul.Controllers
         [Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Index()
         {
-            var farms = db.Farms.Include("ApplicationUser")
-                                      .Include("Product")
-                                      .Include("FarmProducts")
-                                      .OrderByDescending(a => a.Name);
+            var farms = db.Farms.Include("FarmProducts")
+                                .Include("ApplicationUser")
+                                      .OrderByDescending(a => a.Name)
+                                      .ToList();
 
             // ViewBag.OriceDenumireSugestiva
             ViewBag.Farms = farms;
@@ -47,107 +49,107 @@ namespace ItiUmplemFrigiderul.Controllers
 
             // MOTOR DE CAUTARE
 
-            var search = "";
+            //var search = "";
 
-            if (Convert.ToString(HttpContext.Request.Query["search"]) != null)
-            {
-                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim(); // eliminam spatiile libere 
+            //if (Convert.ToString(HttpContext.Request.Query["search"]) != null)
+            //{
+            //    search = Convert.ToString(HttpContext.Request.Query["search"]).Trim(); // eliminam spatiile libere 
 
-                // Cautare in articol (Title si Content)
+            //    // Cautare in articol (Title si Content)
 
-                List<int> productsIds = db.Farms.Where
-                                        (
-                                         at => at.Name.Contains(search)
-                                        ).Select(a => a.Id).ToList();
+            //    List<int> productsIds = db.Farms.Where
+            //                            (
+            //                             at => at.Name.Contains(search)
+            //                             || at.Category.CategoryName.Contains(search)
+            //                            ).Select(a => a.Id).ToList();
 
-                // Cautare in comentarii (Content)
-                List<int> productIdsOfReviewsWithSearchString = db.Reviews
-                                        .Where
-                                        (
-                                         c => c.Content.Contains(search)
-                                        ).Select(c => (int)c.FarmProduct.Id).ToList();
+            //    // Cautare in comentarii (Content)
+            //    List<int> productIdsOfReviewsWithSearchString = db.Reviews
+            //                            .Where
+            //                            (
+            //                             c => c.Content.Contains(search)
+            //                            ).Select(c => (int)c.FarmProduct.Id).ToList();
 
-                // Se formeaza o singura lista formata din toate id-urile selectate anterior
-                List<int> mergedIds = productsIds.Union(productIdsOfReviewsWithSearchString).ToList();
-
-
-                // Lista articolelor care contin cuvantul cautat
-                // fie in articol -> Title si Content
-                // fie in comentarii -> Content
-                farms = db.Farms.Where(farm => mergedIds.Contains(farm.Id))
-                                      .Include("Product")
-                                      .Include("FarmProducts")
-                                      .Include("ApplicationUser")
-                                      .OrderByDescending(a => a.Name);
-
-            }
-
-            ViewBag.SearchString = search;
-
-            // AFISARE PAGINATA
-
-            // Alegem sa afisam 3 articole pe pagina
-            int _perPage = 8;
-
-            // Fiind un numar variabil de articole, verificam de fiecare data utilizand 
-            // metoda Count()
-
-            int totalItems = farms.Count();
-
-            // Se preia pagina curenta din View-ul asociat
-            // Numarul paginii este valoarea parametrului page din ruta
-            // /Articles/Index?page=valoare
-
-            var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
-
-            // Pentru prima pagina offsetul o sa fie zero
-            // Pentru pagina 2 o sa fie 3 
-            // Asadar offsetul este egal cu numarul de articole care au fost deja afisate pe paginile anterioare
-            var offset = 0;
-
-            // Se calculeaza offsetul in functie de numarul paginii la care suntem
-            if (!currentPage.Equals(0))
-            {
-                offset = (currentPage - 1) * _perPage;
-            }
-
-            // Se preiau articolele corespunzatoare pentru fiecare pagina la care ne aflam 
-            // in functie de offset
-            var paginatedProducts = farms.Skip(offset).Take(_perPage);
+            //    // Se formeaza o singura lista formata din toate id-urile selectate anterior
+            //    List<int> mergedIds = productsIds.Union(productIdsOfReviewsWithSearchString).ToList();
 
 
-            // Preluam numarul ultimei pagini
-            ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
+            //    // Lista articolelor care contin cuvantul cautat
+            //    // fie in articol -> Title si Content
+            //    // fie in comentarii -> Content
+            //    farms = db.Farms.Where(farm => mergedIds.Contains(farm.Id))
+            //                          .Include("Category")
+            //                          .Include("Farm")
+            //                          .Include("FarmProducts")
+            //                          .OrderByDescending(a => a.Name);
 
-            // Trimitem articolele cu ajutorul unui ViewBag catre View-ul corespunzator
-            ViewBag.Farms = paginatedProducts;
+            //}
 
-            // DACA AVEM AFISAREA PAGINATA IMPREUNA CU SEARCH
+            //ViewBag.SearchString = search;
 
-            if (search != "")
-            {
-                ViewBag.PaginationBaseUrl = "/Farms/Index/?search=" + search + "&page";
-            }
-            else
-            {
-                ViewBag.PaginationBaseUrl = "/Farms/Index/?page";
-            }
+            //// AFISARE PAGINATA
 
-            return View();
+            //// Alegem sa afisam 3 articole pe pagina
+            //int _perPage = 8;
+
+            //// Fiind un numar variabil de articole, verificam de fiecare data utilizand 
+            //// metoda Count()
+
+            //int totalItems = farms.Count();
+
+            //// Se preia pagina curenta din View-ul asociat
+            //// Numarul paginii este valoarea parametrului page din ruta
+            //// /Articles/Index?page=valoare
+
+            //var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+
+            //// Pentru prima pagina offsetul o sa fie zero
+            //// Pentru pagina 2 o sa fie 3 
+            //// Asadar offsetul este egal cu numarul de articole care au fost deja afisate pe paginile anterioare
+            //var offset = 0;
+
+            //// Se calculeaza offsetul in functie de numarul paginii la care suntem
+            //if (!currentPage.Equals(0))
+            //{
+            //    offset = (currentPage - 1) * _perPage;
+            //}
+
+            //// Se preiau articolele corespunzatoare pentru fiecare pagina la care ne aflam 
+            //// in functie de offset
+            //var paginatedProducts = farms.Skip(offset).Take(_perPage);
+
+
+            //// Preluam numarul ultimei pagini
+            //ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
+
+            //// Trimitem articolele cu ajutorul unui ViewBag catre View-ul corespunzator
+            //ViewBag.Farms = paginatedProducts;
+
+            //// DACA AVEM AFISAREA PAGINATA IMPREUNA CU SEARCH
+
+            //if (search != "")
+            //{
+            //    ViewBag.PaginationBaseUrl = "/Farms/Index/?search=" + search + "&page";
+            //}
+            //else
+            //{
+            //    ViewBag.PaginationBaseUrl = "/Farms/Index/?page";
+            //}
+
+            return View(farms);
         }
 
         [Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Show(int id)
         {
-            Farm farm = db.Farms.Include("Product")
-                                .Include("FarmProducts")
-                                    .Include("Review")
-                                      .Include("ApplicationUser")
-
-                                         .Include("Reviews.User")
+            Farm farm = db.Farms.Include("ApplicationUser")
                               .Where(prd => prd.Id == id)
-                              .First();
-
+                              .FirstOrDefault();
+            if (farm == null)
+            {
+                // If no farm found, redirect to a different page or show an error message
+                return NotFound("Farm not found");
+            }
             SetAccessRights();
             if (TempData.ContainsKey("message"))
             {
@@ -174,16 +176,13 @@ namespace ItiUmplemFrigiderul.Controllers
             }
             else
             {
-                Farm frm = db.Farms.Include("Product")
-                                         .Include("FarmProduct")
-                                         .Include("Review")
-                                         .Include("Reviews.User")
-                                         .Include("ApplicationUser")
+                Farm prd = db.Farms.Include("Category")
+
                                          .Where(prd => prd.Id == review.FarmProductId)
                                          .First();
 
                 SetAccessRights();
-                return View(frm);
+                return View(prd);
             }
         }
 
@@ -199,23 +198,18 @@ namespace ItiUmplemFrigiderul.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public IActionResult New(Farm farm)
+        public async Task<IActionResult> New(Farm farm)
         {
-            var sanitizer = new HtmlSanitizer();
-
-            if (ModelState.IsValid)
+            if (TryValidateModel(farm))
             {
 
                 db.Farms.Add(farm);
                 db.SaveChanges();
-                TempData["message"] = "Ferma a fost adaugata";
+                TempData["message"] = "Produsul a fost adaugat";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
-            else
-            {
-                return View(farm);
-            }
+            return View(farm);
         }
 
 
@@ -223,9 +217,7 @@ namespace ItiUmplemFrigiderul.Controllers
         public IActionResult Edit(int id)
         {
 
-            Farm farm = db.Farms.Include("Product")
-                .Include("ApplicationUser")
-                                         .Include("FarmPeoducts")
+            Farm farm = db.Farms.Include("ApplicationUser")
                                          .Where(prd => prd.Id == id)
                                          .First();
 
@@ -237,7 +229,7 @@ namespace ItiUmplemFrigiderul.Controllers
             else
             {
 
-                TempData["message"] = "Nu aveti dreptul sa faceti modificari asupra unei ferme";
+                TempData["message"] = "Nu aveti dreptul sa faceti modificari asupra unui produs";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index");
             }
@@ -256,20 +248,19 @@ namespace ItiUmplemFrigiderul.Controllers
                 if (User.IsInRole("Admin"))
                 {
                     farm.Name = requestProduct.Name;
-                    farm.UserId = requestProduct.UserId;
+
                     farm.PhoneNumber = requestProduct.PhoneNumber;
+
                     farm.Adress = requestProduct.Adress;
-
-
-                    farm.FarmProducts = requestProduct.FarmProducts;
-                    TempData["message"] = "Ferma a fost modificata";
+                    farm.UserId = requestProduct.UserId;
+                    TempData["message"] = "Produsul a fost modificat";
                     TempData["messageType"] = "alert-success";
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 else
                 {
-                    TempData["message"] = "Nu aveti dreptul sa faceti modificari asupra unei ferme.";
+                    TempData["message"] = "Nu aveti dreptul sa faceti modificari asupra unui produs.";
                     TempData["messageType"] = "alert-danger";
                     return RedirectToAction("Index");
                 }
@@ -288,22 +279,19 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             // Article farm = db.Articles.Find(id);
 
-            Farm farm = db.Farms.Include("Reviews")
-                                         .Include("FarmProducts")
-                                         .Where(art => art.Id == id)
-                                         .First();
+            Farm farm = db.Farms.First();
 
             if (User.IsInRole("Admin"))
             {
                 db.Farms.Remove(farm);
                 db.SaveChanges();
-                TempData["message"] = "Ferma a fost stearsa";
+                TempData["message"] = "Produsul a fost sters";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
             else
             {
-                TempData["message"] = "Nu aveti dreptul sa stergeti o ferma";
+                TempData["message"] = "Nu aveti dreptul sa stergeti un produs";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index");
             }
@@ -322,5 +310,6 @@ namespace ItiUmplemFrigiderul.Controllers
 
             ViewBag.EsteAdmin = User.IsInRole("Admin");
         }
+
     }
 }
