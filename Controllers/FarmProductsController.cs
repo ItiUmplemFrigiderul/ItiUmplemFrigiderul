@@ -37,7 +37,7 @@ namespace ItiUmplemFrigiderul.Controllers
         public IActionResult New(int? id)
         {
             FarmProduct fp = new FarmProduct();
-            fp.FarmId = id;
+            //FarmId = id;
             fp.Prod = GetAllProducts();
 
             return View(fp);
@@ -47,12 +47,13 @@ namespace ItiUmplemFrigiderul.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult New(FarmProduct fp)
         {
+            fp.Id = 0;
             if (ModelState.IsValid)
             {
                 fp.Verified = false;
                 _db.FarmProducts.Add(fp);
                 _db.SaveChanges();
-                return Redirect("Farms/Show/" + fp.FarmId);
+                return RedirectToAction("Index", "Farms");
             }
             fp.Prod = GetAllProducts();
             return View(fp);

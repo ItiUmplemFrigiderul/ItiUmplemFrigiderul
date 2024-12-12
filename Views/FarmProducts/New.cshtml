@@ -3,12 +3,13 @@
 @{
 
     ViewData["Title"] = "Add Product to Farm";
+    var farmId = Context.Request.RouteValues["id"]?.ToString();
 }
 
 <h2>Add Product to Farm</h2>
 
 <form asp-action="New" method="post" >
-    <input type="hidden" asp-for="FarmId" value="@Model.FarmId" /> 
+    <input type="hidden" asp-for="FarmId" value="@farmId" /> 
     <div class="form-group">
         <label asp-for="ProductId">Product:</label>
         <select asp-for="ProductId" asp-items="Model.Prod" class="form-control">
