@@ -268,23 +268,47 @@ namespace ItiUmplemFrigiderul.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, Product requestProduct)
+        public async Task<IActionResult> Edit(int id, Product requestProduct, IFormFile Photo)
         {
+            Product product = db.Products.Find(id);
             var sanitizer = new HtmlSanitizer();
 
-            Product product = db.Products.Find(id);
+            if (Photo != null && Photo.Length > 0)
+            {
+                // Verificăm extensia
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov" };
+                var fileExtension = Path.GetExtension(Photo.FileName).ToLower();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    ModelState.AddModelError("ProductPhoto", "Fișierul trebuie să fie o imagine(jpg, jpeg, png, gif) sau un video(mp4, mov).");
+                    return View(product);
+                }
+
+                // Cale stocare
+                var storagePath = Path.Combine(_env.WebRootPath, "images", Photo.FileName);
+                var databaseFileName = "/images/" + Photo.FileName;
+                // Salvare fișier
+                using (var fileStream = new FileStream(storagePath, FileMode.Create))
+                {
+                    await Photo.CopyToAsync(fileStream);
+                }
+                ModelState.Remove(nameof(product.Photo));
+                product.Photo = databaseFileName;
+
+            }
+            
 
             if (ModelState.IsValid)
             {
                 if ( User.IsInRole("Admin"))
                 {
+                    
                     product.Name = requestProduct.Name;
 
                     requestProduct.Description = sanitizer.Sanitize(requestProduct.Description);
 
                     product.Description = requestProduct.Description;
 
-                    product.Photo = requestProduct.Photo;
                     product.CategoryId = requestProduct.CategoryId;
                     product.FarmProducts = requestProduct.FarmProducts;
                     TempData["message"] = "Produsul a fost modificat";

@@ -1,0 +1,31 @@
+﻿@model ItiUmplemFrigiderul.Models.FarmProduct
+
+@{
+
+    ViewData["Title"] = "Add Product to Farm";
+}
+
+<h2>Add Product to Farm</h2>
+
+<form asp-action="New" method="post" >
+    <input type="hidden" asp-for="FarmId" value="@Model.FarmId" /> 
+    <div class="form-group">
+        <label asp-for="ProductId">Product:</label>
+        <select asp-for="ProductId" asp-items="Model.Prod" class="form-control">
+            <option value="">Selectati produsul</option>
+        </select>
+        <span asp-validation-for="ProductId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Price">Pret:</label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Stock">Stoc:</label>
+        <input asp-for="Stock" class="form-control"></input>
+        <span asp-validation-for="Stock" class="text-danger"></span>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
