@@ -53,6 +53,8 @@ namespace ItiUmplemFrigiderul.Controllers
                 fp.Verified = false;
                 _db.FarmProducts.Add(fp);
                 _db.SaveChanges();
+                TempData["message"] = "Product has been added successfully.";
+                TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index", "Farms");
             }
             fp.Prod = GetAllProducts();
@@ -78,7 +80,7 @@ namespace ItiUmplemFrigiderul.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CategoryName")] FarmProduct fp)
+        public async Task<IActionResult> Edit(int id, FarmProduct fp)
         {
             if (id != fp.Id)
             {
@@ -101,23 +103,31 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(fp);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Verify(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            FarmProduct fp = _db.FarmProducts.Find(id);
 
-            var fp = await _db.FarmProducts
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (fp == null)
+            try
             {
-                return NotFound();
+                fp.Verified = true;
+                _db.SaveChanges();
+                TempData["message"] = "Product has been verified successfully.";
+                TempData["messageType"] = "alert-success";
+                return RedirectToAction("Index", "Farms");
             }
-
-            return View(fp);
+            catch (DbUpdateConcurrencyException)
+            {
+                TempData["message"] = "Esti Gras!";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index", "Farms");
+                throw;
+            }
+            
+            
         }
-
 
         //[HttpPost, ActionName("Delete")]
         [HttpPost]
@@ -127,7 +137,7 @@ namespace ItiUmplemFrigiderul.Controllers
             var fp = await _db.FarmProducts.FindAsync(id);
             _db.FarmProducts.Remove(fp);
             await _db.SaveChangesAsync();
-            return Redirect("Farms/Show/" + fp.FarmId);
+            return RedirectToAction("Index", "Farms");
         }
 
         [NonAction]

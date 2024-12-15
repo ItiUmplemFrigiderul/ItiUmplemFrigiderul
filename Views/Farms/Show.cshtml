@@ -1,5 +1,15 @@
 ﻿@model ItiUmplemFrigiderul.Models.Farm
+<br />
 <h2>Farm Details</h2>
+<br />
+
+@if (ViewBag.Message != null)
+{
+    <div class="p-3 rounded-3 text-center mb-5 @ViewBag.Alert">
+        @ViewBag.Message
+    </div>
+}
+
 <div>
     <strong>Name:</strong> @Model.Name<br />
     <strong>Phone Number:</strong> @Model.PhoneNumber<br />
@@ -22,5 +32,75 @@
         <div class="col-md-12">
             <a asp-controller="FarmProducts" asp-action="New" asp-route-id="@Model.Id" class="btn btn-success">Adauga produs</a>
         </div>
+    </div>
+}
+
+@foreach (var prod in Model.FarmProducts)
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2"></div>
+
+            <div class="col-md-8 card">
+
+                <div>
+
+                    <h4>@prod.Product.Name</h4>
+                    <small>@prod.Product.Description</small>
+                    <strong><i class="bi bi-person"> @prod.Price lei</i></strong>
+                    <p>@prod.Stock buc.</p>
+
+
+                </div>
+                
+
+                @if (ViewBag.AfisareButoane)
+                {
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex">
+                            <div>
+                                <a class="btn btn-outline-primary" asp-controller="FarmProducts" asp-action="Edit" asp-route-id="@prod.Id">
+                                    <i class="bi bi-pencil-square"></i> Editeaza
+                                </a>
+
+                            </div>
+                            <div>
+                                <form method="post" asp-controller="FarmProducts" asp-action="Delete" asp-route-id="@prod.Id">
+
+                                    <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
+
+                                </form>
+                            </div>
+                        
+                        </div>
+                        <div>
+                            @if (@prod.Verified)
+                            {
+                                <p> Verficat</p>
+                            }
+                            else if (ViewBag.EsteAdmin)
+                            {
+                                <form method="post" asp-controller="FarmProducts" asp-action="Verify" asp-route-id="@prod.Id">
+
+                                    <button class="btn btn-outline-primary" type="submit">Verifica</button>
+
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-danger">Neverficat</span>
+                            }
+                        </div>
+
+                    </div>
+                }
+
+                
+            </div>
+
+            <div class="col-md-2"></div>
+        </div>
+        <br />
+
     </div>
 }

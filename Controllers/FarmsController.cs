@@ -22,6 +22,7 @@ namespace ItiUmplemFrigiderul.Controllers
         [Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Index()
         {
+            
             var farms = db.Farms.Include("FarmProducts")
                                 .Include("User")
                                 .OrderBy(f => f.Name)
@@ -40,7 +41,9 @@ namespace ItiUmplemFrigiderul.Controllers
         [Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Show(int id)
         {
-            var farm = db.Farms.Include("FarmProducts").FirstOrDefault(f => f.Id == id);
+            var farm = db.Farms.Include("FarmProducts")
+                               .Include("FarmProducts.Product")
+                               .FirstOrDefault(f => f.Id == id);
             if (farm == null)
             {
                 return NotFound("Farm not found");
