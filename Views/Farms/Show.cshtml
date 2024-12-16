@@ -36,6 +36,7 @@
 }
 
 @foreach (var prod in Model.FarmProducts)
+@if(ViewBag.AfisareButoane || prod.Verified)
 {
     <div class="container">
         <div class="row">
