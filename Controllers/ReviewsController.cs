@@ -3,169 +3,128 @@ using ItiUmplemFrigiderul.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace ItiUmplemFrigiderul.Controllers
 {
-    [Authorize]
     public class ReviewsController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        // PASUL 10: useri si roluri 
+
+        private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public ReviewsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public ReviewsController(
+        ApplicationDbContext context,
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager
+        )
         {
-            _db = context;
+            db = context;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
-
-        // GET: Reviews
-        [Authorize(Roles = "User,Collaborator,Admin")]
-        public IActionResult Index()
-        {
-            var reviews = _db.Reviews
-                             .Include(r => r.FarmProduct)
-                             .ThenInclude(fp => fp.Product)
-                             .Include(r => r.User)
-                             .OrderByDescending(r => r.Id);
-
-            ViewBag.Reviews = reviews;
-
-            if (TempData.ContainsKey("message"))
-            {
-                ViewBag.Message = TempData["message"];
-                ViewBag.Alert = TempData["messageType"];
-            }
-
-            return View();
-        }
-
-        // GET: Reviews/Create
-        [Authorize(Roles = "User")]
-        public IActionResult Create()
-        {
-            ViewBag.FarmProducts = GetFarmProductsList();
-            return View();
-        }
-
-        // POST: Reviews/Create
+        
+        
+        // Adaugarea unui comentariu asociat unui articol in baza de date
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "User")]
-        public IActionResult Create(Review review)
+        public IActionResult New(Review rev)
         {
-            if (ModelState.IsValid)
+            rev.Date = DateTime.Now;
+
+            if(ModelState.IsValid)
             {
-                review.UserId = _userManager.GetUserId(User);
-
-                _db.Reviews.Add(review);
-                _db.SaveChanges();
-
-                TempData["message"] = "Review added successfully!";
-                TempData["messageType"] = "alert-success";
-
-                return RedirectToAction(nameof(Index));
+                db.Comments.Add(rev);
+                db.SaveChanges();
+                return Redirect("/Articles/Show/" + rev.ArticleId);
             }
 
-            ViewBag.FarmProducts = GetFarmProductsList();
-            return View(review);
+            else
+            {
+                return Redirect("/Articles/Show/" + rev.ArticleId);
+            }
+
         }
 
-        // GET: Reviews/Edit/5
-        [Authorize(Roles = "User,Collaborator,Admin")]
-        public IActionResult Edit(int id)
-        {
-            var review = _db.Reviews.Find(id);
-            if (review == null)
-            {
-                return NotFound();
-            }
+        
+        
 
-            if (review.UserId != _userManager.GetUserId(User) && !User.IsInRole("Admin"))
-            {
-                TempData["message"] = "You are not authorized to edit this review.";
-                TempData["messageType"] = "alert-danger";
-                return RedirectToAction(nameof(Index));
-            }
 
-            ViewBag.FarmProducts = GetFarmProductsList();
-            return View(review);
-        }
+        // Stergerea unui comentariu asociat unui articol din baza de date
+        // Se poate sterge comentariul doar de catre userii cu rolul de Admin 
+        // sau de catre utilizatorii cu rolul de User sau Editor, doar daca 
+        // acel comentariu a fost postat de catre acestia
 
-        // POST: Reviews/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "User,Collaborator,Admin")]
-        public IActionResult Edit(int id, Review updatedReview)
-        {
-            var review = _db.Reviews.Find(id);
-            if (review == null)
-            {
-                return NotFound();
-            }
-
-            if (review.UserId != _userManager.GetUserId(User) && !User.IsInRole("Admin"))
-            {
-                TempData["message"] = "You are not authorized to edit this review.";
-                TempData["messageType"] = "alert-danger";
-                return RedirectToAction(nameof(Index));
-            }
-
-            if (ModelState.IsValid)
-            {
-                review.Rating = updatedReview.Rating;
-                review.Content = updatedReview.Content;
-
-                _db.SaveChanges();
-
-                TempData["message"] = "Review updated successfully!";
-                TempData["messageType"] = "alert-success";
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewBag.FarmProducts = GetFarmProductsList();
-            return View(updatedReview);
-        }
-
-        // POST: Reviews/Delete/5
-        [HttpPost]
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        [Authorize(Roles = "User,Editor,Admin")]
         public IActionResult Delete(int id)
         {
-            var review = _db.Reviews.Find(id);
-            if (review == null)
-            {
-                return NotFound();
-            }
+            Comment rev = db.Comments.Find(id);
 
-            if (review.UserId != _userManager.GetUserId(User) && !User.IsInRole("Admin"))
+            if (rev.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
             {
-                TempData["message"] = "You are not authorized to delete this review.";
+                db.Comments.Remove(rev);
+                db.SaveChanges();
+                return Redirect("/Articles/Show/" + rev.ArticleId);
+            }
+            else
+            {
+                TempData["message"] = "Nu aveti dreptul sa stergeti comentariul";
                 TempData["messageType"] = "alert-danger";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Articles");
             }
-
-            _db.Reviews.Remove(review);
-            _db.SaveChanges();
-
-            TempData["message"] = "Review deleted successfully!";
-            TempData["messageType"] = "alert-success";
-
-            return RedirectToAction(nameof(Index));
         }
 
-        // Helper to fetch farm products for dropdowns
-        private IEnumerable<SelectListItem> GetFarmProductsList()
+        // In acest moment vom implementa editarea intr-o pagina View separata
+        // Se editeaza un comentariu existent
+        // Editarea unui comentariu asociat unui articol
+        // [HttpGet] - se executa implicit
+        // Se poate edita un comentariu doar de catre utilizatorul care a postat comentariul respectiv 
+        // Adminii pot edita orice comentariu, chiar daca nu a fost postat de ei
+
+        [Authorize(Roles = "User,Editor,Admin")]
+        public IActionResult Edit(int id)
         {
-            return _db.FarmProducts
-                      .Include(fp => fp.Product)
-                      .Select(fp => new SelectListItem
-                      {
-                          Value = fp.Id.ToString(),
-                          Text = fp.Product.Name
-                      }).ToList();
+            Comment rev = db.Comments.Find(id);
+
+            if (rev.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+            {
+                return View(rev);
+            }
+            else
+            {
+                TempData["message"] = "Nu aveti dreptul sa editati comentariul";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index", "Articles");
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "User,Editor,Admin")]
+        public IActionResult Edit(int id, Comment requestComment)
+        {
+            Comment rev = db.Comments.Find(id);
+
+            if (rev.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+            {
+                if (ModelState.IsValid)
+                {
+                    rev.Content = requestComment.Content;
+
+                    db.SaveChanges();
+
+                    return Redirect("/Articles/Show/" + rev.ArticleId);
+                }
+                else
+                {
+                    return View(requestComment);
+                }
+            }
+            else
+            {
+                TempData["message"] = "Nu aveti dreptul sa editati comentariul";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index", "Articles");
+            }
         }
     }
 }
