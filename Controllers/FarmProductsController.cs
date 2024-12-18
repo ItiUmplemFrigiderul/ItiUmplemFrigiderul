@@ -55,7 +55,7 @@ namespace ItiUmplemFrigiderul.Controllers
                 _db.SaveChanges();
                 TempData["message"] = "Product has been added successfully.";
                 TempData["messageType"] = "alert-success";
-                return RedirectToAction("Index", "Farms");
+                return RedirectToAction("Show", "Farms", new { id = fp.FarmId });
             }
             fp.Prod = GetAllProducts();
             return View(fp);
@@ -89,16 +89,12 @@ namespace ItiUmplemFrigiderul.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _db.Update(fp);
-                    await _db.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                       throw;
-                }
-                return RedirectToAction(nameof(Index));
+                _db.Update(fp);
+                await _db.SaveChangesAsync();
+                
+                TempData["message"] = "Product has been edited successfully.";
+                TempData["messageType"] = "alert-success";
+                return RedirectToAction("Show", "Farms", new { id = fp.FarmId });
             }
             return View(fp);
         }
@@ -116,7 +112,7 @@ namespace ItiUmplemFrigiderul.Controllers
                 _db.SaveChanges();
                 TempData["message"] = "Product has been verified successfully.";
                 TempData["messageType"] = "alert-success";
-                return RedirectToAction("Index", "Farms");
+                return RedirectToAction("Show", "Farms",new { id = fp.FarmId });
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -136,8 +132,10 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             var fp = await _db.FarmProducts.FindAsync(id);
             _db.FarmProducts.Remove(fp);
+            TempData["message"] = "Product has been deleted successfully.";
+            TempData["messageType"] = "alert-success";
             await _db.SaveChangesAsync();
-            return RedirectToAction("Index", "Farms");
+            return RedirectToAction("Show", "Farms", new { id = fp.FarmId });
         }
 
         [NonAction]

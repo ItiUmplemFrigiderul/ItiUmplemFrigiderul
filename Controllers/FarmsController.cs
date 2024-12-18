@@ -44,6 +44,11 @@ namespace ItiUmplemFrigiderul.Controllers
             var farm = db.Farms.Include("FarmProducts")
                                .Include("FarmProducts.Product")
                                .FirstOrDefault(f => f.Id == id);
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Message = TempData["message"];
+                ViewBag.Alert = TempData["messageType"];
+            }
             if (farm == null)
             {
                 return NotFound("Farm not found");
