@@ -1,0 +1,23 @@
+﻿@model ItiUmplemFrigiderul.Models.Review
+
+
+<h2>Editare recenzie</h2>
+<br />
+
+
+<form asp-action="Edit" asp-controller="Reviews" asp-route-id="@Model.Id" method="post">
+
+    <div class="form-group">
+        <label asp-for="Content" class="form-label">Continut recenzie</label>
+        <br />
+        <textarea asp-for="Content" class="form-control"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <br /><br />
+
+    <button class="btn btn-primary" type="submit">Editeaza recenzia</button>
+
+</form>
+
+

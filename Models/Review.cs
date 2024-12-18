@@ -10,10 +10,10 @@ namespace ItiUmplemFrigiderul.Models
         [Key]
         public int Id { get; set; }
         public int FarmProductId { get; set; }
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         [Required(ErrorMessage = "Produsul este obligatoriu")]
-        public virtual FarmProduct FarmProduct { get; set; }
-        public virtual ApplicationUser User { get; set; }
+        public virtual FarmProduct? FarmProduct { get; set; }
+        public virtual ApplicationUser? User { get; set; }
 
         [Required(ErrorMessage = "Nota este obligatorie")]
         public int Rating { get; set; }

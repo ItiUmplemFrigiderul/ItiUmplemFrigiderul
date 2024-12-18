@@ -24,24 +24,24 @@ namespace ItiUmplemFrigiderul.Controllers
         }
         
         
-        [HttpPost]
-        public IActionResult New(Review rev)
-        {
-            rev.Date = DateTime.Now;
+        //[HttpPost]
+        //public IActionResult New(Review rev)
+        //{
+        //    rev.Date = DateTime.Now;
 
-            if(ModelState.IsValid)
-            {
-                db.Reviews.Add(rev);
-                db.SaveChanges();
-                return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
-            }
+        //    if(ModelState.IsValid)
+        //    {
+        //        db.Reviews.Add(rev);
+        //        db.SaveChanges();
+        //        return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
+        //    }
 
-            else
-            {
-                return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
-            }
+        //    else
+        //    {
+        //        return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
+        //    }
 
-        }
+        //}
 
         
 
@@ -59,7 +59,7 @@ namespace ItiUmplemFrigiderul.Controllers
             }
             else
             {
-                TempData["message"] = "Nu aveti dreptul sa stergeti review-ul";
+                TempData["message"] = "Nu aveti dreptul sa stergeti recenzia";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index", "Farms");
             }
@@ -77,7 +77,7 @@ namespace ItiUmplemFrigiderul.Controllers
             }
             else
             {
-                TempData["message"] = "Nu aveti dreptul sa editati comentariul";
+                TempData["message"] = "Nu aveti dreptul sa editati recenzia";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index", "Farms");
             }
@@ -107,7 +107,7 @@ namespace ItiUmplemFrigiderul.Controllers
             }
             else
             {
-                TempData["message"] = "Nu aveti dreptul sa editati review-ul";
+                TempData["message"] = "Nu aveti dreptul sa editati recenzia";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index", "Farms");
             }

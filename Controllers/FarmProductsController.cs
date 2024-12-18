@@ -1,5 +1,7 @@
 ﻿using ItiUmplemFrigiderul.Data;
 using ItiUmplemFrigiderul.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +11,18 @@ namespace ItiUmplemFrigiderul.Controllers
     public class FarmProductsController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public FarmProductsController(ApplicationDbContext context)
+        public FarmProductsController(
+            ApplicationDbContext context,
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager
+        )
         {
             _db = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
 
@@ -24,13 +34,52 @@ namespace ItiUmplemFrigiderul.Controllers
             }
 
             var fp = await _db.FarmProducts
+                .Include("Reviews") 
+                .Include("Reviews.User")
+                .Include("Farm")
+                .Include("Product")
                 .FirstOrDefaultAsync(m => m.Id == id);
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Message = TempData["message"];
+                ViewBag.Alert = TempData["messageType"];
+            }
             if (fp == null)
             {
                 return NotFound();
             }
 
             return View(fp);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "User,Editor,Admin")]
+        public IActionResult Show([FromForm] Review review)
+        {
+            review.Date = DateTime.Now;
+
+            review.UserId = _userManager.GetUserId(User);
+            ModelState.Remove("FarmProduct");
+            if (ModelState.IsValid)
+            {
+                _db.Reviews.Add(review);
+                _db.SaveChanges();
+                return Redirect("/FarmProducts/Show/" + review.FarmProductId);
+            }
+            else
+            {
+                FarmProduct fp = _db.FarmProducts.Include("Product")
+                                         .Include("Farm")
+                                         .Include("Farm.User")
+                                         .Include("Reviews")
+                                         .Include("Reviews.User")
+                                         .Where(fp => fp.Id == review.FarmProductId)
+                                         .First();
+
+
+
+                return View(fp);
+            }
         }
 
 
