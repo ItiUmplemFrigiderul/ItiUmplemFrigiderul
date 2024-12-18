@@ -8,7 +8,6 @@ namespace ItiUmplemFrigiderul.Controllers
 {
     public class ReviewsController : Controller
     {
-        // PASUL 10: useri si roluri 
 
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -25,7 +24,6 @@ namespace ItiUmplemFrigiderul.Controllers
         }
         
         
-        // Adaugarea unui comentariu asociat unui articol in baza de date
         [HttpPost]
         public IActionResult New(Review rev)
         {
@@ -33,58 +31,45 @@ namespace ItiUmplemFrigiderul.Controllers
 
             if(ModelState.IsValid)
             {
-                db.Comments.Add(rev);
+                db.Reviews.Add(rev);
                 db.SaveChanges();
-                return Redirect("/Articles/Show/" + rev.ArticleId);
+                return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
             }
 
             else
             {
-                return Redirect("/Articles/Show/" + rev.ArticleId);
+                return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
             }
 
         }
 
         
-        
-
-
-        // Stergerea unui comentariu asociat unui articol din baza de date
-        // Se poate sterge comentariul doar de catre userii cu rolul de Admin 
-        // sau de catre utilizatorii cu rolul de User sau Editor, doar daca 
-        // acel comentariu a fost postat de catre acestia
 
         [HttpPost]
         [Authorize(Roles = "User,Editor,Admin")]
         public IActionResult Delete(int id)
         {
-            Comment rev = db.Comments.Find(id);
+            Review rev = db.Reviews.Find(id);
 
             if (rev.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
             {
-                db.Comments.Remove(rev);
+                db.Reviews.Remove(rev);
                 db.SaveChanges();
-                return Redirect("/Articles/Show/" + rev.ArticleId);
+                return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
             }
             else
             {
-                TempData["message"] = "Nu aveti dreptul sa stergeti comentariul";
+                TempData["message"] = "Nu aveti dreptul sa stergeti review-ul";
                 TempData["messageType"] = "alert-danger";
-                return RedirectToAction("Index", "Articles");
+                return RedirectToAction("Index", "Farms");
             }
         }
 
-        // In acest moment vom implementa editarea intr-o pagina View separata
-        // Se editeaza un comentariu existent
-        // Editarea unui comentariu asociat unui articol
-        // [HttpGet] - se executa implicit
-        // Se poate edita un comentariu doar de catre utilizatorul care a postat comentariul respectiv 
-        // Adminii pot edita orice comentariu, chiar daca nu a fost postat de ei
 
         [Authorize(Roles = "User,Editor,Admin")]
         public IActionResult Edit(int id)
         {
-            Comment rev = db.Comments.Find(id);
+            Review rev = db.Reviews.Find(id);
 
             if (rev.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
             {
@@ -94,36 +79,37 @@ namespace ItiUmplemFrigiderul.Controllers
             {
                 TempData["message"] = "Nu aveti dreptul sa editati comentariul";
                 TempData["messageType"] = "alert-danger";
-                return RedirectToAction("Index", "Articles");
+                return RedirectToAction("Index", "Farms");
             }
         }
 
         [HttpPost]
         [Authorize(Roles = "User,Editor,Admin")]
-        public IActionResult Edit(int id, Comment requestComment)
+        public IActionResult Edit(int id, Review requestReview)
         {
-            Comment rev = db.Comments.Find(id);
+            Review rev = db.Reviews.Find(id);
 
             if (rev.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
             {
                 if (ModelState.IsValid)
                 {
-                    rev.Content = requestComment.Content;
+                    rev.Content = requestReview.Content;
+                    rev.Rating = requestReview.Rating;
 
                     db.SaveChanges();
 
-                    return Redirect("/Articles/Show/" + rev.ArticleId);
+                    return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
                 }
                 else
                 {
-                    return View(requestComment);
+                    return View(requestReview);
                 }
             }
             else
             {
-                TempData["message"] = "Nu aveti dreptul sa editati comentariul";
+                TempData["message"] = "Nu aveti dreptul sa editati review-ul";
                 TempData["messageType"] = "alert-danger";
-                return RedirectToAction("Index", "Articles");
+                return RedirectToAction("Index", "Farms");
             }
         }
     }
