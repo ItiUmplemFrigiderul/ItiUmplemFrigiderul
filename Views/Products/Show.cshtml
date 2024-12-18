@@ -31,44 +31,35 @@
 }
 
 
-@*Adaugare review
  <div class="container">
 
-     <div class="row">
+    @foreach (var prod in Model.FarmProducts)
+    {
+        <div class="row">
 
-         <div class="col-md-2"></div>
+            <div class="col-md-2"></div>
 
-         <div class="col-md-8">
+            <div class="col-md-8 d-flex justify-content-between card">
 
-             <div class="card">
+                <div>
 
-                 <form method="post" asp-controller="Products" asp-action="Show">
+                    <h4>@prod.Farm.Name</h4>
+                    <small>@Model.Description</small>
+                    <strong><i class="bi bi-person"> @prod.Price lei</i></strong>
+                    <p>@prod.Stock buc.</p>
 
-                     <div class="card-body">
+                </div>
+                <form method="post" asp-controller="Cart" asp-action="Add" asp-route-id="@prod.Id">
 
-                         <input type="hidden" name="ProductId" value="@Model.Id" />
+                    <button class="btn btn-outline-primary" type="submit">Adauga in cos</button>
 
-                         <label>Continut review</label>
-                         <br />
+                </form>
 
-                         <textarea class="form-control" name="Content"></textarea>
+            </div>
 
-                         <span asp-validation-for="Content" class="text-danger"></span>
-                         <br /><br />
+            <div class="col-md-2"></div>
 
-                         <button class="btn btn-success" type="submit">Adauga comentariul</button>
-
-                     </div>
-
-                 </form>
-
-             </div>
-
-         </div>
-
-         <div class="col-md-2"></div>
-
-     </div>
-
+        </div>
+     }
  </div>
-*@
+     

@@ -146,8 +146,11 @@ namespace ItiUmplemFrigiderul.Controllers
         public IActionResult Show(int id)
         {
             Product product = db.Products.Include("Category")
+                                         .Include("FarmProducts")
+                                         .Include("FarmProducts.Farm")
                               .Where(prd => prd.Id == id)
                               .FirstOrDefault();
+            ViewBag.Product = product;
             if (product == null)
             {
                 // If no product found, redirect to a different page or show an error message
