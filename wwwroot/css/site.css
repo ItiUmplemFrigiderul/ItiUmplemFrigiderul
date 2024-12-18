@@ -20,3 +20,40 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+.containerstar {
+    background-color: rgba(255, 255, 255, 0.3);
+    margin: auto;
+    padding: 50px 30px;
+    border-radius: 30px;
+    letter-spacing: 5px;
+}
+
+
+.stars {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .stars i {
+        color: #d8d2d1;
+        font-size: 25px;
+        align-items: center;
+        justify-content: space-evenly;
+        text-shadow: 1px 1px 0.2px black;
+        cursor: pointer;
+    }
+
+.activestar {
+    color: #ba5737 !important;
+    transform: scale(1.2) !important;
+}
+

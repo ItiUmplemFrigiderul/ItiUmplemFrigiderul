@@ -115,16 +115,33 @@
 
                         <input type="hidden" name="FarmProductId" value="@Model.Id" />
 
-                        <label>Continut recenzie</label>
-                        <br />
+                        <link rel="stylesheet"
+                              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+                              integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+                              crossorigin="anonymous"
+                              referrerpolicy="no-referrer" />
+                            <div class="containerstar">
+                                <div class="stars">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
 
-                        <textarea class="form-control" name="Content"></textarea>
-                        <label asp-for="Rating">Rating:</label>
-                        <input asp-for="Rating" class="form-control" />
-                        <br /><br />
+                            <!-- Câmp ascuns pentru valoarea ratingului -->
+                            <input type="hidden" id="Rating" name="Rating" value="0" />
 
-                        <button class="btn btn-success" type="submit">Adauga recenzia</button>
+                            <label>Conținut recenzie</label>
+                            <textarea class="form-control" name="Content"></textarea>
+                            <br />
 
+                            <button class="btn btn-success" type="submit">Adaugă recenzia</button>
+                        
+
+
+                      
                     </div>
 
                 </form>
