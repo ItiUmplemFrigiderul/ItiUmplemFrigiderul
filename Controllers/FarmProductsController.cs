@@ -33,12 +33,17 @@ namespace ItiUmplemFrigiderul.Controllers
                 return NotFound();
             }
 
+            SetAccessRights();
+
             var fp = await _db.FarmProducts
                 .Include("Reviews") 
                 .Include("Reviews.User")
                 .Include("Farm")
                 .Include("Product")
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            UpdateProductRating(fp.Id);
+
             if (TempData.ContainsKey("message"))
             {
                 ViewBag.Message = TempData["message"];
@@ -64,6 +69,7 @@ namespace ItiUmplemFrigiderul.Controllers
             {
                 _db.Reviews.Add(review);
                 _db.SaveChanges();
+                UpdateProductRating(review.FarmProductId);
                 return Redirect("/FarmProducts/Show/" + review.FarmProductId);
             }
             else
@@ -79,6 +85,24 @@ namespace ItiUmplemFrigiderul.Controllers
 
 
                 return View(fp);
+            }
+        }
+
+        [NonAction]
+        public void UpdateProductRating(int farmProductId)
+        {
+            var reviews = _db.Reviews
+                             .Where(r => r.FarmProductId == farmProductId)
+                             .Select(r => r.Rating)
+                             .ToList();
+
+            float newRating = reviews.Count > 0 ? (float)Math.Round(reviews.Average(), 2) : 0;
+
+            var farmProduct = _db.FarmProducts.Find(farmProductId);
+            if (farmProduct != null)
+            {
+                farmProduct.Rating = newRating; 
+                _db.SaveChanges();
             }
         }
 
@@ -208,5 +232,20 @@ namespace ItiUmplemFrigiderul.Controllers
             }
             return selectList;
         }
+        private void SetAccessRights()
+        {
+            ViewBag.AfisareButoane = false;
+
+            if (User.IsInRole("Admin") || User.IsInRole("Collaborator"))
+            {
+                ViewBag.AfisareButoane = true;
+            }
+
+            ViewBag.UserCurent = _userManager.GetUserId(User);
+
+            ViewBag.EsteAdmin = User.IsInRole("Admin");
+        }
+
+
     }
 }

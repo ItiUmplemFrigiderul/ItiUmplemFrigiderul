@@ -312,7 +312,6 @@ namespace ItiUmplemFrigiderul.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -557,9 +556,7 @@ namespace ItiUmplemFrigiderul.Data.Migrations
 
                     b.HasOne("ItiUmplemFrigiderul.Models.ApplicationUser", "User")
                         .WithMany("Reviews")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("FarmProduct");
 

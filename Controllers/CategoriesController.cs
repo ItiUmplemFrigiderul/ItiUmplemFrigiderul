@@ -1,7 +1,9 @@
 ﻿using ItiUmplemFrigiderul.Data;
 using ItiUmplemFrigiderul.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItiUmplemFrigiderul.Controllers
@@ -10,21 +12,31 @@ namespace ItiUmplemFrigiderul.Controllers
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager
+            )
         {
             _db = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // GET: Category
         public async Task<IActionResult> Index()
         {
+            SetAccessRights();
             return View(await _db.Categories.ToListAsync());
         }
 
         
         public async Task<IActionResult> Show(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
@@ -32,6 +44,7 @@ namespace ItiUmplemFrigiderul.Controllers
 
             var category = await _db.Categories
                 .FirstOrDefaultAsync(m => m.Id == id);
+            category.Prods = GetAllProducts(category);
             if (category == null)
             {
                 return NotFound();
@@ -53,6 +66,7 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             if (ModelState.IsValid)
             {
+                category.Prods = GetAllProducts(category);
                 _db.Add(category);
                 _db.SaveChanges();
                 return RedirectToAction(nameof(Index));
@@ -69,6 +83,7 @@ namespace ItiUmplemFrigiderul.Controllers
             }
 
             var category = await _db.Categories.FindAsync(id);
+            category.Prods = GetAllProducts(category);
             if (category == null)
             {
                 return NotFound();
@@ -90,6 +105,7 @@ namespace ItiUmplemFrigiderul.Controllers
             {
                 try
                 {
+                    category.Prods = GetAllProducts(category);
                     _db.Update(category);
                     await _db.SaveChangesAsync();
                 }
@@ -127,7 +143,7 @@ namespace ItiUmplemFrigiderul.Controllers
         }
 
 
-        //[HttpPost, ActionName("Delete")]
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -141,6 +157,29 @@ namespace ItiUmplemFrigiderul.Controllers
         private bool CategoryExists(int id)
         {
             return _db.Categories.Any(e => e.Id == id);
+        }
+
+        private void SetAccessRights()
+        {
+            ViewBag.AfisareButoane = false;
+
+            if (User.IsInRole("Admin"))
+            {
+                ViewBag.AfisareButoane = true;
+            }
+
+            ViewBag.UserCurent = _userManager.GetUserId(User);
+
+            ViewBag.EsteAdmin = User.IsInRole("Admin");
+        }
+
+        [NonAction]
+        public IEnumerable<Product>? GetAllProducts(Category category)
+        {
+
+            var products = _db.Products.Where(p => p.CategoryId == category.Id).ToList();
+
+            return products;
         }
     }
 }

@@ -12,11 +12,15 @@
 <div>
     <strong>Farm:</strong> @Model.Farm.Name<br />
     <strong>Product:</strong> @Model.Product.Name<br />
+    <strong>Stock:</strong> @Model.Stock<br />
+
     <div class="media-body">
         <strong>Description:</strong>
         @Model.Product.Description
     </div>
     <img class="mr-3" src="@Model.Product.Photo" alt="@Model.Product.Name" style="width: 200px;">
+    <strong>Rating:</strong> @Model.Rating<br />
+    <a href="/Farms/Index" class="btn btn-secondary">Back to list</a>
 </div>
 
 <div class="card">
@@ -27,11 +31,11 @@
     {
         <div class="d-flex flex-row justify-content-between">
 
-            <a class="btn btn-success" asp-controller="FarmProducts" asp-action="Edit" asp-route-id="@Model.Id">Editeaza produs</a>
+            <a class="btn btn-success" asp-controller="FarmProducts" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
 
             <form method="post" asp-controller="FarmProducts" asp-action="Delete" asp-route-id="@Model.Id">
 
-                <button class="btn btn-danger" type="submit">Sterge Produs</button>
+                <button class="btn btn-danger" type="submit">Delete</button>
 
             </form>
 
@@ -57,34 +61,37 @@
                 <div>
 
                     <p>@rev.Content</p>
+                    @for (int i = 1; i <= rev.Rating; i++)
+                    {
+                        <i class="fa-solid fa-star"></i>
+                    }
                     <div class="d-inline-flex">
                        
-
                     </div> 
-                    <small>@rev.Date</small>
+                    <p>@rev.Date</p>
                     <strong><i class="bi bi-person"> @rev.User.UserName @rev.User.LastName</i></strong>
-
+                    
                 </div>
                 <br>
 
-                @if (rev.UserId == ViewBag.UserCurent || ViewBag.EsteAdmin == true)
-                {
+                 @if (rev.UserId == ViewBag.UserCurent || ViewBag.EsteAdmin == true)
+                 {
                     <div class="d-flex">
                         <div>
                             <a class="btn btn-outline-primary" asp-controller="Reviews" asp-action="Edit" asp-route-id="@rev.Id">
-                                <i class="bi bi-pencil-square"></i> Editeaza
+                                <i class="bi bi-pencil-square"></i> Edit
                             </a>
 
                         </div>
                         <div>
                             <form method="post" asp-controller="Reviews" asp-action="Delete" asp-route-id="@rev.Id">
 
-                                <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
+                                <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Delete</button>
 
                             </form>
                         </div>
                     </div>
-                }
+                 }
 
                 <br />
             </div>
@@ -97,7 +104,6 @@
 }
 
 
-@* Afisarea formularului in care se poate adauga un comentariu *@
 
 <div class="container">
 
@@ -130,14 +136,15 @@
                                 </div>
                             </div>
 
-                            <!-- Câmp ascuns pentru valoarea ratingului -->
+                            <!-- Camp ascuns pentru valoarea ratingului -->
                             <input type="hidden" id="Rating" name="Rating" value="0" />
-
-                            <label>Conținut recenzie</label>
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                            <p ></p>
+                            <label>Content</label>
                             <textarea class="form-control" name="Content"></textarea>
                             <br />
 
-                            <button class="btn btn-success" type="submit">Adaugă recenzia</button>
+                            <button class="btn btn-success" type="submit">Add review</button>
                         
 
 

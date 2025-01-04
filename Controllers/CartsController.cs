@@ -19,7 +19,6 @@ namespace ItiUmplemFrigiderul.Controllers
             _userManager = userManager;
         }
 
-        // GET: Cart
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
@@ -32,7 +31,6 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(cartItems);
         }
 
-        // GET: Cart/AddToCart/5
         public async Task<IActionResult> AddToCart(int farmProductId, float quantity)
         {
             var userId = _userManager.GetUserId(User);
@@ -58,7 +56,6 @@ namespace ItiUmplemFrigiderul.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Cart/UpdateCart/5
         public async Task<IActionResult> UpdateCart(int id, float quantity)
         {
             var cartItem = await _db.Carts.FindAsync(id);
@@ -72,7 +69,6 @@ namespace ItiUmplemFrigiderul.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Cart/RemoveFromCart/5
         public async Task<IActionResult> RemoveFromCart(int id)
         {
             var cartItem = await _db.Carts.FindAsync(id);
