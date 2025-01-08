@@ -15,6 +15,6 @@ namespace ItiUmplemFrigiderul.Models
         public virtual FarmProduct FarmProduct { get; set; }
 
         [Required(ErrorMessage = "Cantitatea este obligatorie")]
-        public virtual float Quantity { get; set; }
+        public virtual int Quantity { get; set; }
     }
 }
