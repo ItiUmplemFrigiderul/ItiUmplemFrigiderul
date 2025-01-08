@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItiUmplemFrigiderul.Controllers
@@ -25,7 +26,65 @@ namespace ItiUmplemFrigiderul.Controllers
             _roleManager = roleManager;
         }
 
+        [AllowAnonymous]
+        public IActionResult Index(string sortOrder)
+        {
+            var products = _db.FarmProducts.Include("Farm")
+                                      .Include("Product")
+                                      .Include("Product.Category")
+                                      .AsQueryable();
 
+
+            
+            
+
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Message = TempData["message"];
+                ViewBag.Alert = TempData["messageType"];
+            }
+
+            var search = "";
+
+            // Verifică dacă există un parametru de căutare
+            if (Convert.ToString(HttpContext.Request.Query["search"]) != null)
+            {
+                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim(); // Elimină spațiile libere
+
+                // Filtrează produsele care conțin termenul de căutare
+                products = products.Where(p => p.Product.Name.Contains(search) ||
+                                                p.Product.Category.CategoryName.Contains(search));
+            }
+
+            // Aplică sortarea DOAR pe produsele filtrate
+            switch (sortOrder)
+            {
+                case "price_asc":
+                    products = products.OrderBy(p => p.Price);
+                    break;
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.Price);
+                    break;
+                case "rating_asc":
+                    products = products.OrderBy(p => p.Rating);
+                    break;
+                case "rating_desc":
+                    products = products.OrderByDescending(p => p.Rating);
+                    break;
+                default:
+                    products = products.OrderBy(p => p.Product.Name);
+                    break;
+            }
+
+            ViewBag.FarmProducts = products;
+            ViewBag.SearchString = search;
+
+            return View(products);
+        }
+
+
+
+        [AllowAnonymous]
         public async Task<IActionResult> Show(int? id)
         {
             if (id == null)
@@ -58,7 +117,7 @@ namespace ItiUmplemFrigiderul.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "User,Editor,Admin")]
+        [AllowAnonymous]
         public IActionResult Show([FromForm] Review review)
         {
             review.Date = DateTime.Now;
@@ -235,10 +294,18 @@ namespace ItiUmplemFrigiderul.Controllers
         private void SetAccessRights()
         {
             ViewBag.AfisareButoane = false;
+            ViewBag.Autentificat = false;
+            
+            if(User.IsInRole("User"))
+            {
+                ViewBag.Autentificat = true;
+            }
 
             if (User.IsInRole("Admin") || User.IsInRole("Collaborator"))
             {
                 ViewBag.AfisareButoane = true;
+                ViewBag.Autentificat = true;
+
             }
 
             ViewBag.UserCurent = _userManager.GetUserId(User);

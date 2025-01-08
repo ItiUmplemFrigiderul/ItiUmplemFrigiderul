@@ -28,7 +28,7 @@ namespace ItiUmplemFrigiderul.Controllers
         
 
         [HttpPost]
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        [AllowAnonymous]
         public IActionResult Delete(int id)
         {
             Review rev = db.Reviews.Find(id);
@@ -48,7 +48,7 @@ namespace ItiUmplemFrigiderul.Controllers
         }
 
 
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        [AllowAnonymous]
         public IActionResult Edit(int id)
         {
             Review rev = db.Reviews.Find(id);
@@ -66,7 +66,7 @@ namespace ItiUmplemFrigiderul.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        [AllowAnonymous]
         public IActionResult Edit(int id, Review requestReview)
         {
             Review rev = db.Reviews.Find(id);

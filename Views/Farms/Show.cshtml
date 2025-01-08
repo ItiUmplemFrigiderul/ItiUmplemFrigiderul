@@ -1,4 +1,12 @@
 ﻿@model ItiUmplemFrigiderul.Models.Farm
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
+
+
 <br />
 <h2>Farm Details</h2>
 <br />
@@ -50,6 +58,7 @@
                     <small>@prod.Product.Description</small>
                     <strong><i class="bi bi-person"> @prod.Price lei</i></strong>
                     <p>@prod.Stock buc.</p>
+                        <p>Rating: @prod.Rating<i class="fa-solid fa-star"></i></p>
 
 
                 </div>

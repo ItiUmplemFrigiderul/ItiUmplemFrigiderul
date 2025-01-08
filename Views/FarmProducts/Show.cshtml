@@ -1,6 +1,10 @@
 ﻿@model ItiUmplemFrigiderul.Models.FarmProduct
 
-
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
 
 @if (ViewBag.Message != null)
 {
@@ -19,8 +23,7 @@
         @Model.Product.Description
     </div>
     <img class="mr-3" src="@Model.Product.Photo" alt="@Model.Product.Name" style="width: 200px;">
-    <strong>Rating:</strong> @Model.Rating<br />
-    <a href="/Farms/Index" class="btn btn-secondary">Back to list</a>
+    <strong>Rating:</strong> @Model.Rating<i class="fa-solid fa-star"></i><br />
 </div>
 
 <div class="card">
@@ -49,7 +52,7 @@
 
 
 
-
+@*All Reviews*@
 @foreach (var rev in Model.Reviews)
 {
     <div class="container">
@@ -104,28 +107,26 @@
 }
 
 
+@*Add Review*@
+@if (ViewBag.Autentificat)
+{
+    <div class="container">
 
-<div class="container">
+        <div class="row">
 
-    <div class="row">
+            <div class="col-md-2"></div>
 
-        <div class="col-md-2"></div>
+            <div class="col-md-8">
 
-        <div class="col-md-8">
+                <div class="card">
 
-            <div class="card">
+                    <form method="post" asp-controller="FarmProducts" asp-action="Show">
 
-                <form method="post" asp-controller="FarmProducts" asp-action="Show">
+                        <div class="card-body">
 
-                    <div class="card-body">
+                            <input type="hidden" name="FarmProductId" value="@Model.Id" />
 
-                        <input type="hidden" name="FarmProductId" value="@Model.Id" />
-
-                        <link rel="stylesheet"
-                              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-                              integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
-                              crossorigin="anonymous"
-                              referrerpolicy="no-referrer" />
+                            
                             <div class="containerstar">
                                 <div class="stars">
                                     <i class="fa-solid fa-star"></i>
@@ -145,20 +146,21 @@
                             <br />
 
                             <button class="btn btn-success" type="submit">Add review</button>
-                        
 
 
-                      
-                    </div>
 
-                </form>
+
+                        </div>
+
+                    </form>
+
+                </div>
 
             </div>
 
+            <div class="col-md-2"></div>
+
         </div>
 
-        <div class="col-md-2"></div>
-
     </div>
-
-</div>
+}

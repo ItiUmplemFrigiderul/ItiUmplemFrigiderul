@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ItiUmplemFrigiderul.Controllers
 {
-    [Authorize(Roles = "Admin")]  // Restrict access to administrators
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -27,13 +26,14 @@ namespace ItiUmplemFrigiderul.Controllers
         }
 
         // GET: Category
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             SetAccessRights();
             return View(await _db.Categories.ToListAsync());
         }
 
-        
+        [AllowAnonymous]
         public async Task<IActionResult> Show(int? id)
         {
 
@@ -53,7 +53,7 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(category);
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public IActionResult New()
         {
             return View();
@@ -62,6 +62,7 @@ namespace ItiUmplemFrigiderul.Controllers
         // POST: Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles ="Admin")]
         public IActionResult New([Bind("Id,CategoryName")] Category category)
         {
             if (ModelState.IsValid)
@@ -74,7 +75,7 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(category);
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -94,6 +95,7 @@ namespace ItiUmplemFrigiderul.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CategoryName")] Category category)
         {
             if (id != category.Id)
@@ -125,6 +127,7 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(category);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -146,6 +149,7 @@ namespace ItiUmplemFrigiderul.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var category = await _db.Categories.FindAsync(id);

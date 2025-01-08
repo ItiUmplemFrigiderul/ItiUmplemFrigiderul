@@ -33,7 +33,7 @@ namespace ItiUmplemFrigiderul.Controllers
 
 
         // GET: ProductsController
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var products = db.Products.Include("Category")
@@ -65,25 +65,25 @@ namespace ItiUmplemFrigiderul.Controllers
                                         )
                                         .Select(a => a.Id).ToList();
 
-                // Cautare in comentarii (Content)
-                List<int> productIdsOfReviewsWithSearchString = db.Reviews
-                                        .Where
-                                        (
-                                         c => c.Content.Contains(search)
-                                        ).Select(c => (int)c.FarmProduct.Id).ToList();
+                //// Cautare in comentarii (Content)
+                //List<int> productIdsOfReviewsWithSearchString = db.Reviews
+                //                        .Where
+                //                        (
+                //                         c => c.Content.Contains(search)
+                //                        ).Select(c => (int)c.FarmProduct.Id).ToList();
 
-                // Se formeaza o singura lista formata din toate id-urile selectate anterior
-                List<int> mergedIds = productsIds.Union(productIdsOfReviewsWithSearchString).ToList();
+                //// Se formeaza o singura lista formata din toate id-urile selectate anterior
+                //List<int> mergedIds = productsIds.Union(productIdsOfReviewsWithSearchString).ToList();
 
 
                 // Lista articolelor care contin cuvantul cautat
                 // fie in articol -> Title si Content
-                // fie in comentarii -> Content
-                products = (List<Product>)db.Products.Where(product => mergedIds.Contains(product.Id))
-                                      .Include("Category")
-                                      .Include("Farm")
-                                      .Include("FarmProducts")
-                                      .OrderByDescending(a => a.Name);
+                // fie in comentarii -> Content          //mergeIds
+                products = db.Products.Where(product => productsIds.Contains(product.Id))
+                      .Include("Category")
+                      .OrderByDescending(a => a.Name)
+                      .ToList();
+
 
             }
 
@@ -91,11 +91,7 @@ namespace ItiUmplemFrigiderul.Controllers
 
             // AFISARE PAGINATA
 
-            // Alegem sa afisam 3 articole pe pagina
-            int _perPage = 9;
-
-            // Fiind un numar variabil de articole, verificam de fiecare data utilizand 
-            // metoda Count()
+            int _perPage = 6;
 
             int totalItems = products.Count();
 
@@ -104,7 +100,7 @@ namespace ItiUmplemFrigiderul.Controllers
             // /Articles/Index?page=valoare
 
             var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
-
+        
             // Pentru prima pagina offsetul o sa fie zero
             // Pentru pagina 2 o sa fie 3 
             // Asadar offsetul este egal cu numarul de articole care au fost deja afisate pe paginile anterioare
@@ -141,11 +137,12 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(products);
         }
 
-
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        [AllowAnonymous]
         public IActionResult Show(int id)
         {
-            Product product = db.Products.Include("Category")
+            Product product =  db.Products.Include("Category")
+                              .Include("FarmProducts")
+                              .Include("FarmProducts.Farm")
                               .Where(prd => prd.Id == id)
                               .FirstOrDefault();
             if (product == null)
@@ -163,31 +160,31 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(product);
         }
 
-        [HttpPost]
-        [Authorize(Roles = "User,Collaborator,Admin")]
-        public IActionResult Show([FromForm] Review review)
-        {
+        //[AllowAnonymous]
+        //public IActionResult Show([FromForm] Review review)
+        //{
 
-            // preluam Id-ul utilizatorului care posteaza comentariul
-            review.UserId = _userManager.GetUserId(User);
+        //    // preluam Id-ul utilizatorului care posteaza comentariul
+        //    review.UserId = _userManager.GetUserId(User);
 
-            if (ModelState.IsValid)
-            {
-                db.Reviews.Add(review);
-                db.SaveChanges();
-                return Redirect("/Products/Show/" + review.FarmProductId);
-            }
-            else
-            {
-                Product prd = db.Products.Include("Category")
-                                         
-                                         .Where(prd => prd.Id == review.FarmProductId)
-                                         .First();
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Reviews.Add(review);
+        //        db.SaveChanges();
+        //        return Redirect("/Products/Show/" + review.FarmProductId);
+        //    }
+        //    else
+        //    {
+        //        Product prd = db.Products.Include("Category")
+        //                                 .Include("FarmProducts")
+        //                                 .Include("FarmProducts.Farm")
+        //                                 .Where(prd => prd.Id == review.FarmProductId)
+        //                                 .First();
 
-                SetAccessRights();
-                return View(prd);
-            }
-        }
+        //        SetAccessRights();
+        //        return View(prd);
+        //    }
+        //}
 
         [Authorize(Roles = "Admin")]
         public IActionResult New()
@@ -393,5 +390,6 @@ namespace ItiUmplemFrigiderul.Controllers
             }
             return selectList;
         }
+
     }
 }
