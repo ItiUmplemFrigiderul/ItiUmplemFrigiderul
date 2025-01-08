@@ -9,7 +9,46 @@
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Category Name: @Model.CategoryName</h5>
-        <p><strong>Id:</strong> @Model.Id</p>
         <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        <div class="container">
+            <div class="row">
+                @foreach (var product in Model.Prods)
+                {
+                    
+                    <div class="card" style="width:33%; height:33%">
+                        <div class="card-body">
+                            <h3 class="card-title alert-success py-3 px-3 rounded2">@product.Name</h3>
+                            @if (product.Photo.Contains(".mp4") || product.Photo.Contains(".mov"))
+                            {
+                                <video width="550" height="300" controls>
+                                    <source src="@product.Photo" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            }
+                            else
+                            {
+                                <div class="text-center">
+                                    <img src="@product.Photo" alt="Product Image"
+                                         class="img-fluid rounded mb-3 shadow"
+                                         style="height: 300px; width: auto; object-fit: cover; border-radius: 15px;">
+                                </div>
+                            }
+                            <div class="card-text">@product.Description</div>
+                            <div class="d-flex justify-content-between flex-row mt-5">
+                                <div>
+                                    <i class="bi bi-globe"></i>
+                                    @product.Category.CategoryName
+                                </div>
+                                <a class="btn btn-success"
+                                   href="/Products/Show/@product.Id">Afisare produs</a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <br />
+                    <br />
+                }
+            </div>
+        </div>
     </div>
 </div>

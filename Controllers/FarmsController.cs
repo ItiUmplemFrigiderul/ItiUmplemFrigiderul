@@ -19,7 +19,7 @@ namespace ItiUmplemFrigiderul.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             
@@ -38,7 +38,7 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(farms);
         }
 
-        [Authorize(Roles = "User,Collaborator,Admin")]
+        [AllowAnonymous]
         public IActionResult Show(int id)
         {
             var farm = db.Farms.Include("FarmProducts")
@@ -64,6 +64,7 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(new Farm());
         }
 
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> New(Farm farm)
@@ -82,55 +83,62 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(farm);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Collaborator, Admin")]
         public IActionResult Edit(int id)
         {
+            
             var farm = db.Farms.FirstOrDefault(f => f.Id == id);
-            if (farm == null)
+            if (ViewBag.EsteAdmin || farm.User == ViewBag.UserCurent)
             {
-                return NotFound("Farm not found");
+                if (farm == null)
+                {
+                    return NotFound("Farm not found");
+                }
             }
-
             return View(farm);
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Collaborator, Admin")]
         public async Task<IActionResult> Edit(int id, Farm updatedFarm)
         {
             Farm farm = db.Farms.Find(id);
 
-
-            if (ModelState.IsValid)
+            if (ViewBag.EsteAdmin || farm.UserId == ViewBag.UserCurent)
             {
-                farm.Name = updatedFarm.Name;
-                farm.PhoneNumber = updatedFarm.PhoneNumber;
-                farm.Adress = updatedFarm.Adress;
-                farm.FarmProducts = updatedFarm.FarmProducts;
+                if (ModelState.IsValid)
+                {
+                    farm.Name = updatedFarm.Name;
+                    farm.PhoneNumber = updatedFarm.PhoneNumber;
+                    farm.Adress = updatedFarm.Adress;
+                    farm.FarmProducts = updatedFarm.FarmProducts;
 
-                db.SaveChanges();
-                TempData["message"] = "Farm has been updated successfully.";
-                TempData["messageType"] = "alert-success";
-                return RedirectToAction("Index");
+                    db.SaveChanges();
+                    TempData["message"] = "Farm has been updated successfully.";
+                    TempData["messageType"] = "alert-success";
+                    return RedirectToAction("Index");
+                }
             }
-
             return View(updatedFarm);
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Collaborator, Admin")]
         public IActionResult Delete(int id)
         {
             var farm = db.Farms.FirstOrDefault(f => f.Id == id);
-            if (farm == null)
+            if (ViewBag.EsteAdmin || farm.User == ViewBag.UserCurent)
             {
-                return NotFound("Farm not found");
-            }
+                if (farm == null)
+                {
+                    return NotFound("Farm not found");
+                }
 
-            db.Farms.Remove(farm);
-            db.SaveChanges();
-            TempData["message"] = "Farm has been deleted successfully.";
-            TempData["messageType"] = "alert-success";
+                db.Farms.Remove(farm);
+                db.SaveChanges();
+                TempData["message"] = "Farm has been deleted successfully.";
+                TempData["messageType"] = "alert-success";
+            }
             return RedirectToAction("Index");
         }
 

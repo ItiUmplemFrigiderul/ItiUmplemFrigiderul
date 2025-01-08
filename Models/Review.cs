@@ -15,8 +15,10 @@ namespace ItiUmplemFrigiderul.Models
         public virtual FarmProduct? FarmProduct { get; set; }
         public virtual ApplicationUser? User { get; set; }
 
-        [Required(ErrorMessage = "Nota este obligatorie")]
+        [Required]
+        [Range(1, 5, ErrorMessage = "The rating must be between 1 and 5.")]
         public int Rating { get; set; }
+
         public string? Content { get; set; }
         public DateTime Date {  get; set; }
 

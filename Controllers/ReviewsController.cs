@@ -24,29 +24,11 @@ namespace ItiUmplemFrigiderul.Controllers
         }
         
         
-        //[HttpPost]
-        //public IActionResult New(Review rev)
-        //{
-        //    rev.Date = DateTime.Now;
-
-        //    if(ModelState.IsValid)
-        //    {
-        //        db.Reviews.Add(rev);
-        //        db.SaveChanges();
-        //        return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
-        //    }
-
-        //    else
-        //    {
-        //        return Redirect("/FarmProducts/Show/" + rev.FarmProductId);
-        //    }
-
-        //}
 
         
 
         [HttpPost]
-        [Authorize(Roles = "User,Editor,Admin")]
+        [AllowAnonymous]
         public IActionResult Delete(int id)
         {
             Review rev = db.Reviews.Find(id);
@@ -66,7 +48,7 @@ namespace ItiUmplemFrigiderul.Controllers
         }
 
 
-        [Authorize(Roles = "User,Editor,Admin")]
+        [AllowAnonymous]
         public IActionResult Edit(int id)
         {
             Review rev = db.Reviews.Find(id);
@@ -84,13 +66,14 @@ namespace ItiUmplemFrigiderul.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "User,Editor,Admin")]
+        [AllowAnonymous]
         public IActionResult Edit(int id, Review requestReview)
         {
             Review rev = db.Reviews.Find(id);
 
             if (rev.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
             {
+                ModelState.Remove("FarmProduct");
                 if (ModelState.IsValid)
                 {
                     rev.Content = requestReview.Content;

@@ -1,22 +1,49 @@
 ﻿@model ItiUmplemFrigiderul.Models.Review
 
+@if (ViewBag.Message != null)
+{
+    <div class="p-3 rounded-3 text-center mb-5 @ViewBag.Alert">
+        @ViewBag.Message
+    </div>
+}
 
-<h2>Editare recenzie</h2>
+<h2>Edit review</h2>
 <br />
 
 
 <form asp-action="Edit" asp-controller="Reviews" asp-route-id="@Model.Id" method="post">
 
-    <div class="form-group">
-        <label asp-for="Content" class="form-label">Continut recenzie</label>
+    <div class="card-body">
+
+        <input type="hidden" name="FarmProductId" value="@Model.Id" />
+
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+              integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer" />
+        <div class="containerstar">
+            <div class="stars">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+            </div>
+        </div>
+
+        <!-- Camp ascuns pentru valoarea ratingului -->
+        <input type="hidden" id="Rating" name="Rating" value="0" />
+        <span asp-validation-for="Rating" class="text-danger"></span>
+        <p></p>
+        <label>Content</label>
+        <textarea class="form-control" name="Content"></textarea>
         <br />
-        <textarea asp-for="Content" class="form-control"></textarea>
-        <span asp-validation-for="Content" class="text-danger"></span>
+
+
     </div>
 
-    <br /><br />
-
-    <button class="btn btn-primary" type="submit">Editeaza recenzia</button>
+    <button class="btn btn-primary" type="submit">Edit</button>
 
 </form>
 
