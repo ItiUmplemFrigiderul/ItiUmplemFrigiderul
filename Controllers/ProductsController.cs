@@ -145,6 +145,7 @@ namespace ItiUmplemFrigiderul.Controllers
                               .Include("FarmProducts.Farm")
                               .Where(prd => prd.Id == id)
                               .FirstOrDefault();
+            ViewBag.Product = product;
             if (product == null)
             {
                 // If no product found, redirect to a different page or show an error message

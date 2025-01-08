@@ -18,68 +18,31 @@ namespace ItiUmplemFrigiderul.Controllers
             _db = context;
             _userManager = userManager;
         }
-
-        public async Task<IActionResult> Index()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Add(int id)
         {
-            var userId = _userManager.GetUserId(User);
-            var cartItems = await _db.Carts
-                                     .Where(c => c.UserId == userId)
-                                     .Include(c => c.FarmProduct)
-                                         .ThenInclude(fp => fp.Product)
-                                     .ToListAsync();
+            Cart cart = new Cart();
+            cart.FarmProductId = id;
+            cart.UserId = _userManager.GetUserId(User);
+            cart.Quantity = 1;
 
-            return View(cartItems);
-        }
-
-        public async Task<IActionResult> AddToCart(int farmProductId, float quantity)
-        {
-            var userId = _userManager.GetUserId(User);
-            var existingItem = await _db.Carts
-                                        .FirstOrDefaultAsync(c => c.UserId == userId && c.FarmProductId == farmProductId);
-
-            if (existingItem != null)
+            try
             {
-                existingItem.Quantity += quantity;
+                _db.Carts.Add(cart);
+                _db.SaveChanges();
+                TempData["message"] = "Product has been added to your Cart.";
+                TempData["messageType"] = "alert-success";
+                return RedirectToAction("Index", "Products");
             }
-            else
+            catch (DbUpdateConcurrencyException)
             {
-                var cartItem = new Cart
-                {
-                    FarmProductId = farmProductId,
-                    Quantity = quantity,
-                    UserId = userId
-                };
-                _db.Carts.Add(cartItem);
+                TempData["message"] = "Esti Gras!";
+                TempData["messageType"] = "alert-danger";
+                return RedirectToAction("Index", "Products");
+                throw;
             }
 
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
-        public async Task<IActionResult> UpdateCart(int id, float quantity)
-        {
-            var cartItem = await _db.Carts.FindAsync(id);
-            if (cartItem == null || cartItem.UserId != _userManager.GetUserId(User))
-            {
-                return NotFound();
-            }
-
-            cartItem.Quantity = quantity;
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        public async Task<IActionResult> RemoveFromCart(int id)
-        {
-            var cartItem = await _db.Carts.FindAsync(id);
-            if (cartItem == null || cartItem.UserId != _userManager.GetUserId(User))
-            {
-                return NotFound();
-            }
-
-            _db.Carts.Remove(cartItem);
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
     }
 }
