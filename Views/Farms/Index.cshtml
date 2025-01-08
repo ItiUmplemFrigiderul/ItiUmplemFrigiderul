@@ -4,7 +4,7 @@
     ViewData["Title"] = "Farm";
 }
 
-<h2>Farms</h2>
+<h2 class="logo text-center my-4">Farms</h2>
 
 @if (TempData["message"] != null)
 {
@@ -27,7 +27,7 @@
                             @farm.User.UserName
                         </div>
                         <a class="btn btn-success"
-                           href="/Farms/Show/@farm.Id">Afisare ferma</a>
+                           href="/Farms/Show/@farm.Id">Show Farm</a>
                     </div>
                 </div>
 

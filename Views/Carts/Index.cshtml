@@ -10,7 +10,7 @@
     ViewData["Title"] = "Cart";
 }
 
-<h2>Your Cart</h2>
+<h2 class="logo text-center my-4">Your Cart</h2>
 
 @if (TempData["message"] != null)
 {
@@ -125,7 +125,8 @@
             </div>
 
             <form method="post" asp-action="FinalizeOrder" asp-controller="Carts">
-                <div><textarea name="adress" >Adresa</textarea></div>
+                <div>Adress</div>
+                <div><textarea name="adress" ></textarea></div>
                 <button type="submit" class="btn btn-warning">
                     Finalize Order
                 </button>

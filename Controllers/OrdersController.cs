@@ -23,11 +23,14 @@ namespace ItiUmplemFrigiderul.Controllers
         [Authorize(Roles = "User,Collaborator,Admin")]
         public IActionResult Index()
         {
+            var userId = _userManager.GetUserId(User);
+
             var orders = _db.Orders
                             .Include("User")
                             .Include("ProductOrders")
-                            .Include("ProductId")
-                            .OrderByDescending(o => o.Date);
+                            .OrderByDescending(o => o.Date)
+                            .Where(ord => ord.UserId == userId)
+                            .ToList();
 
             ViewBag.Orders = orders;
 
@@ -42,11 +45,12 @@ namespace ItiUmplemFrigiderul.Controllers
 
         // GET: Orders/Details/5
         [Authorize(Roles = "User,Collaborator,Admin")]
-        public IActionResult Details(int id)
+        public IActionResult Show(int id)
         {
             var order = _db.Orders
                            .Include("ProductOrders")
-                           .Include("ProductId")
+                           .Include("ProductOrders.FarmProduct.Farm")
+                           .Include("ProductOrders.FarmProduct.Product")
                            .FirstOrDefault(o => o.Id == id);
 
             if (order == null)
@@ -57,95 +61,19 @@ namespace ItiUmplemFrigiderul.Controllers
             return View(order);
         }
 
-        // GET: Orders/Create
-        [Authorize(Roles = "User")]
-        public IActionResult Create()
-        {
-            return View();
-        }
 
-        // POST: Orders/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "User")]
-        public IActionResult Create(Order order)
-        {
-            if (ModelState.IsValid)
-            {
-                order.UserId = _userManager.GetUserId(User);
-                order.Date = DateTime.Now;
-
-                _db.Orders.Add(order);
-                _db.SaveChanges();
-
-                TempData["message"] = "Order created successfully!";
-                TempData["messageType"] = "alert-success";
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(order);
-        }
-
-        // GET: Orders/Edit/5
         [Authorize(Roles = "Admin")]
-        public IActionResult Edit(int id)
+        public IActionResult ShowAllOrders()
         {
-            var order = _db.Orders.Find(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
+            var orders = _db.Orders
+                            .Include(o => o.User)
+                            .Include(o => o.ProductOrders)
+                            .OrderByDescending(o => o.Date)
+                            .ToList();
 
-            return View(order);
+            return View(orders);
         }
 
-        // POST: Orders/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public IActionResult Edit(int id, Order updatedOrder)
-        {
-            var order = _db.Orders.Find(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
-            {
-                order.Adress = updatedOrder.Adress;
-                order.Total = updatedOrder.Total;
-
-                _db.SaveChanges();
-
-                TempData["message"] = "Order updated successfully!";
-                TempData["messageType"] = "alert-success";
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(updatedOrder);
-        }
-
-        // POST: Orders/Delete/5
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public IActionResult Delete(int id)
-        {
-            var order = _db.Orders.Find(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            _db.Orders.Remove(order);
-            _db.SaveChanges();
-
-            TempData["message"] = "Order deleted successfully!";
-            TempData["messageType"] = "alert-success";
-
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

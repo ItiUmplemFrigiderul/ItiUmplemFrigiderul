@@ -8,7 +8,7 @@
     ViewData["Title"] = "Products";
 }
 
-<h2>Products</h2>
+<h2 class="logo text-center my-4">Products</h2>
 
 @if (TempData["message"] != null)
 {
@@ -32,14 +32,14 @@
         <div class="col-md-4">
             <select name="sortOrder" class="form-select">
                 <option>Selecteaza</option>
-                <option value="price_asc">Preț crescător</option>
-                <option value="price_desc">Preț descrescător</option>
-                <option value="rating_asc">Rating crescător</option>
-                <option value="rating_desc">Rating descrescător</option>
+                <option value="price_asc">Ascending price</option>
+                <option value="price_desc">Descending price</option>
+                <option value="rating_asc">Ascending rating</option>
+                <option value="rating_desc">Descending price</option>
             </select>
         </div>
         <div class="col-md-2">
-            <button type="submit" class="btn btn-primary">Sortează</button>
+            <button type="submit" class="btn btn-primary">Sort</button>
         </div>
     </div>
 </form>

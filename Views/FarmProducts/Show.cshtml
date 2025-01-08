@@ -6,128 +6,94 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer" />
 
+<h2 class="text-center mt-5">Product Details</h2>
+
 @if (ViewBag.Message != null)
 {
-    <div class="p-3 rounded-3 text-center mb-5 @ViewBag.Alert">
+    <div class="alert alert-dismissible @ViewBag.Alert">
         @ViewBag.Message
     </div>
 }
 
-<div>
-    <strong>Farm:</strong> @Model.Farm.Name<br />
-    <strong>Product:</strong> @Model.Product.Name<br />
-    <strong>Stock:</strong> @Model.Stock<br />
+<!-- Product Information -->
+<div class="container mt-4">
+    <div class="card shadow-lg rounded p-4" style="background-color: #fef9ef;">
+        <div class="row align-items-center">
+            <div class="col-md-5 text-center">
+                <img src="@Model.Product.Photo" alt="@Model.Product.Name" class="img-fluid rounded shadow" style="max-height: 300px; object-fit: cover;">
+            </div>
+            <div class="col-md-7">
+                <h2 class="text-danger">@Model.Product.Name</h2>
+                <p class="text-muted">@Model.Product.Description</p>
+                <p><strong>Stock:</strong> @Model.Stock</p>
+                <p><strong>Rating:</strong> @Model.Rating <i class="fa-solid fa-star text-warning"></i></p>
 
-    <div class="media-body">
-        <strong>Description:</strong>
-        @Model.Product.Description
-    </div>
-    <img class="mr-3" src="@Model.Product.Photo" alt="@Model.Product.Name" style="width: 200px;">
-    <strong>Rating:</strong> @Model.Rating<i class="fa-solid fa-star"></i><br />
-</div>
-
-<div class="card">
-
-
-    @if ((ViewBag.AfisareButoane == true && @Model.Farm.UserId == ViewBag.UserCurent)
-    || ViewBag.EsteAdmin == true)
-    {
-        <div class="d-flex flex-row justify-content-between">
-
-            <a class="btn btn-success" asp-controller="FarmProducts" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
-
-            <form method="post" asp-controller="FarmProducts" asp-action="Delete" asp-route-id="@Model.Id">
-
-                <button class="btn btn-danger" type="submit">Delete</button>
-
-            </form>
-
-        </div>
-    }
-
-</div>
-
-<br />
-<br />
-
-
-
-@*All Reviews*@
-@foreach (var rev in Model.Reviews)
-{
-    <div class="container">
-        <div class="row">
-            <div class="col-md-2"></div>
-
-            <div class="col-md-8">
-
-                <div>
-
-                    <p>@rev.Content</p>
-                    @for (int i = 1; i <= rev.Rating; i++)
-                    {
-                        <i class="fa-solid fa-star"></i>
-                    }
-                    <div class="d-inline-flex">
-                       
-                    </div> 
-                    <p>@rev.Date</p>
-                    <strong><i class="bi bi-person"> @rev.User.UserName @rev.User.LastName</i></strong>
-                    
+                <div class="d-flex flex-row align-items-center justify-content-between mt-4">
+                    <a class="btn btn-outline-primary" asp-controller="FarmProducts" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                    <form method="post" asp-controller="FarmProducts" asp-action="Delete" asp-route-id="@Model.Id">
+                        <button class="btn btn-danger" type="submit">Delete</button>
+                    </form>
                 </div>
-                <br>
+            </div>
+        </div>
+    </div>
+</div>
 
-                 @if (rev.UserId == ViewBag.UserCurent || ViewBag.EsteAdmin == true)
-                 {
-                    <div class="d-flex">
-                        <div>
-                            <a class="btn btn-outline-primary" asp-controller="Reviews" asp-action="Edit" asp-route-id="@rev.Id">
-                                <i class="bi bi-pencil-square"></i> Edit
-                            </a>
+<!-- Reviews Section -->
+@if (Model.Reviews != null && Model.Reviews.Count > 0)
+{
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">Customer Reviews</h3>
+        <div class="row g-4">
+            @foreach (var rev in Model.Reviews)
+            {
+                <div class="col-md-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <p>@rev.Content</p>
+                            <div>
+                                @for (int i = 1; i <= rev.Rating; i++)
+                                {
+                                    <i class="fa-solid fa-star text-warning"></i>
+                                }
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-muted">By: @rev.User.UserName @rev.User.LastName</p>
+                                <p class="text-muted">@rev.Date</p>
+                            </div>
 
-                        </div>
-                        <div>
-                            <form method="post" asp-controller="Reviews" asp-action="Delete" asp-route-id="@rev.Id">
-
-                                <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Delete</button>
-
-                            </form>
+                            @if (rev.UserId == ViewBag.UserCurent || ViewBag.EsteAdmin == true)
+                            {
+                                <div class="d-flex">
+                                    <a class="btn btn-outline-primary me-2" asp-controller="Reviews" asp-action="Edit" asp-route-id="@rev.Id">
+                                        <i class="fa-solid fa-pencil-alt"></i> Edit
+                                    </a>
+                                    <form method="post" asp-controller="Reviews" asp-action="Delete" asp-route-id="@rev.Id">
+                                        <button class="btn btn-outline-danger" type="submit"><i class="fa-solid fa-trash-alt"></i> Delete</button>
+                                    </form>
+                                </div>
+                            }
                         </div>
                     </div>
-                 }
-
-                <br />
-            </div>
-
-            <div class="col-md-2"></div>
-
+                </div>
+            }
         </div>
-
     </div>
 }
 
-
-@*Add Review*@
+<!-- Add Review Section -->
 @if (ViewBag.Autentificat)
 {
-    <div class="container">
-
-        <div class="row">
-
-            <div class="col-md-2"></div>
-
-            <div class="col-md-8">
-
-                <div class="card">
-
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">Add Your Review</h3>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg">
                     <form method="post" asp-controller="FarmProducts" asp-action="Show">
-
                         <div class="card-body">
-
                             <input type="hidden" name="FarmProductId" value="@Model.Id" />
 
-                            
-                            <div class="containerstar">
+                            <div class="d-flex justify-content-between mb-3">
                                 <div class="stars">
                                     <i class="fa-solid fa-star"></i>
                                     <i class="fa-solid fa-star"></i>
@@ -135,32 +101,20 @@
                                     <i class="fa-solid fa-star"></i>
                                     <i class="fa-solid fa-star"></i>
                                 </div>
+                                <!-- Rating hidden field -->
+                                <input type="hidden" id="Rating" name="Rating" value="0" />
                             </div>
 
-                            <!-- Camp ascuns pentru valoarea ratingului -->
-                            <input type="hidden" id="Rating" name="Rating" value="0" />
-                            <span asp-validation-for="Rating" class="text-danger"></span>
-                            <p ></p>
-                            <label>Content</label>
-                            <textarea class="form-control" name="Content"></textarea>
-                            <br />
+                            <div class="form-group">
+                                <label for="Content">Review Content</label>
+                                <textarea class="form-control" id="Content" name="Content" rows="4"></textarea>
+                            </div>
 
-                            <button class="btn btn-success" type="submit">Add review</button>
-
-
-
-
+                            <button class="btn btn-success mt-3" type="submit">Submit Review</button>
                         </div>
-
                     </form>
-
                 </div>
-
             </div>
-
-            <div class="col-md-2"></div>
-
         </div>
-
     </div>
 }

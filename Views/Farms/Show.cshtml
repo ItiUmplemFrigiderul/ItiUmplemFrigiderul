@@ -6,116 +6,63 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer" />
 
-
-<br />
-<h2>Farm Details</h2>
-<br />
+<h2 class="text-center mt-5">Farm Details</h2>
 
 @if (ViewBag.Message != null)
 {
-    <div class="p-3 rounded-3 text-center mb-5 @ViewBag.Alert">
+    <div class="alert alert-dismissible @ViewBag.Alert">
         @ViewBag.Message
     </div>
 }
 
-<div>
-    <strong>Name:</strong> @Model.Name<br />
-    <strong>Phone Number:</strong> @Model.PhoneNumber<br />
-    <strong>Address:</strong> @Model.Adress<br />
-</div>
-@if (ViewBag.AfisareButoane || @Model.UserId == ViewBag.UserCurent)
-{
-    <div class="d-flex flex-row justify-content-between">
-
-        <a class="btn btn-success" asp-controller="Farms" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
-        <a href="/Farms/Index" class="btn btn-secondary">Back to list</a>
-        <form method="post" asp-controller="Farms" asp-action="Delete" asp-route-id="@Model.Id">
-
-            <button class="btn btn-danger" type="submit">Delete farm</button>
-
-        </form>
-
-    </div>
-    <div class="row mt-3">
-        <div class="col-md-12">
-            <a asp-controller="FarmProducts" asp-action="New" asp-route-id="@Model.Id" class="btn btn-success">Adauga produs</a>
-        </div>
-    </div>
-}
-
-@foreach (var prod in Model.FarmProducts)
-    @if (ViewBag.AfisareButoane || prod.Verified || @Model.UserId == ViewBag.UserCurent)
-{
-    <div class="container">
+<div class="container mt-4">
+    <div class="card shadow-lg rounded p-4">
         <div class="row">
-            <div class="col-md-2"></div>
-
-            <div class="col-md-8 card">
-
-                <div>
-
-                    <h4>@prod.Product.Name</h4>
-                    <small>@prod.Product.Description</small>
-                    <strong><i class="bi bi-person"> @prod.Price lei</i></strong>
-                    <p>@prod.Stock buc.</p>
-                        <p>Rating: @prod.Rating<i class="fa-solid fa-star"></i></p>
-
-
-                </div>
-                <div>
-                                <a class="btn btn-outline-primary" asp-controller="FarmProducts" asp-action="Show" asp-route-id="@prod.Id">
-                                    <i class="bi bi-pencil-square"></i> Detalii
-                                </a>
-
-                </div>
-
-                    @if (ViewBag.AfisareButoane || @Model.UserId == ViewBag.UserCurent)
+            <div class="col-md-6">
+                <h4><strong>Name:</strong> @Model.Name</h4>
+                <p><strong>Phone Number:</strong> @Model.PhoneNumber</p>
+                <p><strong>Address:</strong> @Model.Adress</p>
+            </div>
+            <div class="col-md-6 text-end">
+                @if (ViewBag.AfisareButoane || @Model.UserId == ViewBag.UserCurent)
                 {
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex">
-                            <div>
-                                <a class="btn btn-outline-primary" asp-controller="FarmProducts" asp-action="Edit" asp-route-id="@prod.Id">
-                                    <i class="bi bi-pencil-square"></i> Editeaza
-                                </a>
-
-                            </div>
-                            <div>
-                                <form method="post" asp-controller="FarmProducts" asp-action="Delete" asp-route-id="@prod.Id">
-
-                                    <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
-
-                                </form>
-                            </div>
-                        
-                        </div>
-                        <div>
-                            @if (@prod.Verified)
-                            {
-                                <p> Verficat</p>
-                            }
-                            else if (ViewBag.EsteAdmin)
-                            {
-                                <form method="post" asp-controller="FarmProducts" asp-action="Verify" asp-route-id="@prod.Id">
-
-                                    <button class="btn btn-outline-primary" type="submit">Verifica</button>
-
-                                </form>
-                            }
-                            else
-                            {
-                                <span class="text-danger">Neverficat</span>
-                            }
-                        </div>
-
+                    <div class="d-flex justify-content-end">
+                        <a class="btn btn-success me-2" asp-controller="Farms" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                        <form method="post" asp-controller="Farms" asp-action="Delete" asp-route-id="@Model.Id">
+                            <button class="btn btn-danger" type="submit">Delete Farm</button>
+                        </form>
+                    </div>
+                    <div class="mt-3">
+                        <a asp-controller="FarmProducts" asp-action="New" asp-route-id="@Model.Id" class="btn btn-primary">Add Product</a>
                     </div>
                 }
-
-                
             </div>
-
-            <div class="col-md-2"></div>
         </div>
-        <br />
-
     </div>
-}
+
+    <div class="row mt-4">
+        @foreach (var prod in Model.FarmProducts)
+        {
+            @if (ViewBag.AfisareButoane || prod.Verified || @Model.UserId == ViewBag.UserCurent)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-body">
+                            <h5 class="card-title">@prod.Product.Name</h5>
+                            <p class="card-text">@prod.Product.Description</p>
+                            <p><strong>Price:</strong> @prod.Price lei</p>
+                            <p><strong>Stock:</strong> @prod.Stock buc.</p>
+                            <p>Rating: @prod.Rating <i class="fa-solid fa-star text-warning"></i></p>
+                            <div class="d-flex justify-content-between">
+                                <a class="btn btn-outline-primary" asp-controller="FarmProducts" asp-action="Show" asp-route-id="@prod.Id">Details</a>
+                                <form method="post" asp-controller="Carts" asp-action="Add" asp-route-id="@prod.Id">
+                                    <button class="btn btn-outline-success">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

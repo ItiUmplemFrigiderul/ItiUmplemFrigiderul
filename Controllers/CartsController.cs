@@ -30,7 +30,7 @@ namespace ItiUmplemFrigiderul.Controllers
                               .Include(c => c.FarmProduct.Farm)
                               .Where(c => c.UserId == user)
                               .ToList();
-            int total = products.Sum(p => p.Quantity * p.FarmProduct.Price);
+            int total = (int)products.Sum(p => p.Quantity * p.FarmProduct.Price);
 
             ViewBag.Total = total;
 
@@ -147,7 +147,7 @@ namespace ItiUmplemFrigiderul.Controllers
             {
                 UserId = userId,
                 Adress = adress, 
-                Total = cartItems.Sum(ci => ci.Quantity * ci.FarmProduct.Price),
+                Total = (int)cartItems.Sum(ci => ci.Quantity * ci.FarmProduct.Price),
                 Date = DateTime.Now
             };
 

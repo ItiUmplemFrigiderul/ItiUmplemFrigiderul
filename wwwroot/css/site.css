@@ -18,7 +18,8 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #f3f0e7;
 }
 
 * {
@@ -57,3 +58,239 @@ body {
     transform: scale(1.2) !important;
 }
 
+.logo {
+    font-size: 50px;
+    font-weight: bold;
+    color: #e45555;
+    border-top: 3px solid #e45555;
+    border-bottom: 3px solid #e45555;
+}
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    max-width: 90%;
+}
+
+    .image-container img {
+        width: 70ww;
+        max-width: 800px;
+        height: auto;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+.recommendation-section {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background-color: #fef9ef;
+}
+.image-container2 {
+    margin: 20px auto;
+    max-width: 90%;
+}
+    .image-container2 img {
+        width: 25ww;
+        max-width: 500px;
+        height: auto;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .content-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        gap: 20px;
+    }
+
+.text-container {
+    flex: 1 1 50%;
+    max-width: 600px;
+    text-align: left;
+}
+
+    .text-container h2 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .text-container p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+
+.visit-us-section {
+    text-align: center;
+    padding: 40px;
+    background-color: #fef6e9;
+}
+
+    .visit-us-section h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .visit-us-section p {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .visit-us-section strong {
+        font-size: 1.1rem;
+        color: #e63946;
+    }
+
+
+.navbar {
+    background: #ede7d8;
+    height: 100%;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    top: 0;
+    z-index: 999;
+    min-width: 100vw;
+    border-bottom: 1px solid #ddd;
+}
+
+.navbar_menu {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    
+}
+
+.navbar_btn {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    text-align: center;
+}
+
+    .navbar_btn a {
+        display: inline-block;
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        width: 100%;
+        text-align: center;
+        height: 100%;
+    }
+
+        .navbar_btn a:hover {
+            color: #e63946;
+        }
+.PartialLogin{
+    margin-left:200px;
+}
+
+#navbar_logo {
+    left: 15vw;
+    cursor: pointer;
+    height: 7vw;
+    width: auto;
+}
+
+.card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+.card-title {
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.pagination .page-link {
+    color: #258cfb;
+}
+
+    .pagination .page-link:hover {
+        background-color: #258cfb;
+        color: #fff;
+    }
+
+
+.btn {
+    background-color: #e63946; 
+    color: white; 
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .btn:hover {
+        background-color: #ba5737; 
+        transform: scale(1.05); 
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+.btn-primary1 {
+    background-color: #e63946;
+}
+
+    .btn-primary1:hover {
+        background-color: #ba5737;
+    }
+
+.btn-success1 {
+    background-color: #e63946;
+}
+
+    .btn-success1:hover {
+        background-color: #ba5737;
+    }
+
+.btn-outline-success1 {
+    background-color: transparent;
+    color: #e63946;
+    border: 2px solid #38b000;
+
+}
+
+    .btn-outline-success1:hover {
+        background-color: #ba5737;
+        color: white;
+    }
+
+.btn-danger1 {
+    background-color: #e63946; 
+    color: white;
+}
+
+    .btn-danger1:hover {
+        background-color: #ba5737;
+    }
+
+ 
