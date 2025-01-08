@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ItiUmplemFrigiderul.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250104130516_M6")]
-    partial class M6
+    [Migration("20250108121824_M12")]
+    partial class M12
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
