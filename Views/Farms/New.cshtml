@@ -16,5 +16,12 @@
         <input asp-for="Adress" class="form-control" />
         <span asp-validation-for="Adress" class="text-danger"></span>
     </div>
+    <div class="form-group">
+        <label asp-for="UserId">Owner:</label>
+        <select asp-for="UserId" asp-items="Model.Colls" class="form-control">
+            <option value="">Select owner</option>
+        </select>
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </form>

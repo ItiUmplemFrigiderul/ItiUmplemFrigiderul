@@ -3,6 +3,7 @@ using ItiUmplemFrigiderul.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItiUmplemFrigiderul.Controllers
@@ -12,23 +13,31 @@ namespace ItiUmplemFrigiderul.Controllers
     {
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public FarmsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+
+        public FarmsController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager
+        )
         {
             db = context;
             _userManager = userManager;
+            _roleManager = roleManager;
+
         }
 
         [AllowAnonymous]
         public IActionResult Index()
         {
-            
+
             var farms = db.Farms.Include("FarmProducts")
                                 .Include("User")
                                 .OrderBy(f => f.Name)
                                 .ToList();
             ViewBag.Farms = farms;
-
+            SetAccessRights();
             if (TempData.ContainsKey("message"))
             {
                 ViewBag.Message = TempData["message"];
@@ -44,6 +53,8 @@ namespace ItiUmplemFrigiderul.Controllers
             var farm = db.Farms.Include("FarmProducts")
                                .Include("FarmProducts.Product")
                                .FirstOrDefault(f => f.Id == id);
+
+
             if (TempData.ContainsKey("message"))
             {
                 ViewBag.Message = TempData["message"];
@@ -61,7 +72,11 @@ namespace ItiUmplemFrigiderul.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult New()
         {
-            return View(new Farm());
+            Farm farm = new Farm();
+
+            farm.Colls = GetAllCollaborators();
+
+            return View(farm);
         }
 
 
@@ -69,8 +84,8 @@ namespace ItiUmplemFrigiderul.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> New(Farm farm)
         {
-            farm.UserId = _userManager.GetUserId(User);
-            
+
+
             if (ModelState.IsValid)
             {
                 db.Farms.Add(farm);
@@ -86,9 +101,9 @@ namespace ItiUmplemFrigiderul.Controllers
         [Authorize(Roles = "Collaborator, Admin")]
         public IActionResult Edit(int id)
         {
-            
+            SetAccessRights();
             var farm = db.Farms.FirstOrDefault(f => f.Id == id);
-            if (ViewBag.EsteAdmin || farm.User == ViewBag.UserCurent)
+            if (ViewBag.EsteAdmin || farm.UserId == ViewBag.UserCurent)
             {
                 if (farm == null)
                 {
@@ -103,6 +118,7 @@ namespace ItiUmplemFrigiderul.Controllers
         public async Task<IActionResult> Edit(int id, Farm updatedFarm)
         {
             Farm farm = db.Farms.Find(id);
+            SetAccessRights();
 
             if (ViewBag.EsteAdmin || farm.UserId == ViewBag.UserCurent)
             {
@@ -146,7 +162,7 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             ViewBag.AfisareButoane = false;
 
-            if (User.IsInRole("Admin") || User.IsInRole("Collaborator"))
+            if (User.IsInRole("Admin"))
             {
                 ViewBag.AfisareButoane = true;
             }
@@ -155,5 +171,27 @@ namespace ItiUmplemFrigiderul.Controllers
 
             ViewBag.EsteAdmin = User.IsInRole("Admin");
         }
+
+        [NonAction]
+        public IEnumerable<SelectListItem> GetAllCollaborators()
+        {
+
+            var selectList = new List<SelectListItem>();
+
+
+            var usersInRole = _userManager.GetUsersInRoleAsync("Collaborator").GetAwaiter().GetResult();
+
+            foreach (var user in usersInRole)
+            {
+                selectList.Add(new SelectListItem
+                {
+                    Value = user.Id,
+                    Text = user.UserName
+                });
+            }
+
+            return selectList;
+        }
+
     }
 }

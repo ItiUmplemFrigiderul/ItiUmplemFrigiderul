@@ -26,6 +26,8 @@ namespace ItiUmplemFrigiderul.Models
         public string? UserId { get; set; }
         public virtual ApplicationUser? User { get; set; }
 
+        [NotMapped]
+        public IEnumerable<SelectListItem>? Colls { get; set; }
         public virtual ICollection<FarmProduct>? FarmProducts { get; set; }
 
     }
