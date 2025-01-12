@@ -46,17 +46,15 @@ namespace ItiUmplemFrigiderul.Controllers
 
             var search = "";
 
-            // Verifică dacă există un parametru de căutare
             if (Convert.ToString(HttpContext.Request.Query["search"]) != null)
             {
-                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim(); // Elimină spațiile libere
+                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim();
 
-                // Filtrează produsele care conțin termenul de căutare
                 products = products.Where(p => p.Product.Name.Contains(search) ||
                                                 p.Product.Category.CategoryName.Contains(search));
             }
 
-            // Aplică sortarea DOAR pe produsele filtrate
+            
             switch (sortOrder)
             {
                 case "price_asc":

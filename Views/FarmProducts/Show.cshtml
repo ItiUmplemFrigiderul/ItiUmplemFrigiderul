@@ -26,13 +26,30 @@
                 <h2 class="text-danger">@Model.Product.Name</h2>
                 <p class="text-muted">@Model.Product.Description</p>
                 <p><strong>Stock:</strong> @Model.Stock</p>
+                <p><strong>Price:</strong> @Model.Price</p>
                 <p><strong>Rating:</strong> @Model.Rating <i class="fa-solid fa-star text-warning"></i></p>
 
                 <div class="d-flex flex-row align-items-center justify-content-between mt-4">
+                    @if (ViewBag.EsteAdmin || Model.Farm.UserId == ViewBag.UserCurent)
+                    {
                     <a class="btn btn-outline-primary" asp-controller="FarmProducts" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
-                    <form method="post" asp-controller="FarmProducts" asp-action="Delete" asp-route-id="@Model.Id">
-                        <button class="btn btn-danger" type="submit">Delete</button>
-                    </form>
+                    }
+                    @if (Model.Stock >= 1)
+                    {
+                        <form method="post" asp-controller="Carts" asp-action="Add" asp-route-id="@Model.Id">
+                            <button class="btn btn-outline-success">Add to Cart</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <p>Out of stock</p>
+                    }
+                    @if (ViewBag.EsteAdmin || Model.Farm.UserId == ViewBag.UserCurent)
+                    {
+                        <form method="post" asp-controller="FarmProducts" asp-action="Delete" asp-route-id="@Model.Id">
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                        </form>
+                    }
                 </div>
             </div>
         </div>

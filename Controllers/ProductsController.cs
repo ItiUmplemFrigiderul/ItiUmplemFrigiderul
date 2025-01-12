@@ -65,17 +65,6 @@ namespace ItiUmplemFrigiderul.Controllers
                                         )
                                         .Select(a => a.Id).ToList();
 
-                //// Cautare in comentarii (Content)
-                //List<int> productIdsOfReviewsWithSearchString = db.Reviews
-                //                        .Where
-                //                        (
-                //                         c => c.Content.Contains(search)
-                //                        ).Select(c => (int)c.FarmProduct.Id).ToList();
-
-                //// Se formeaza o singura lista formata din toate id-urile selectate anterior
-                //List<int> mergedIds = productsIds.Union(productIdsOfReviewsWithSearchString).ToList();
-
-
                 // Lista articolelor care contin cuvantul cautat
                 // fie in articol -> Title si Content
                 // fie in comentarii -> Content          //mergeIds
@@ -360,7 +349,7 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             ViewBag.AfisareButoane = false;
 
-            if (User.IsInRole("Admin")||User.IsInRole("Collaborator"))
+            if (User.IsInRole("Admin"))
             {
                 ViewBag.AfisareButoane = true;
             }

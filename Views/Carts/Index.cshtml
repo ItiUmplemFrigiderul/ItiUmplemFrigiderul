@@ -113,6 +113,9 @@
                                        href="/FarmProducts/Show/@product.FarmProduct.Id">
                                         Show product
                                     </a>
+                                    <form method="post" asp-controller="Carts" asp-action="Delete" asp-route-id="@product.Id">
+                                        <button class="btn btn-danger" type="submit">Remove from cart</button>
+                                    </form>
                                 </div>
                             </div> <!-- /.col -->
                         </div> <!-- /.d-flex -->
@@ -125,8 +128,10 @@
             </div>
 
             <form method="post" asp-action="FinalizeOrder" asp-controller="Carts">
-                <div>Adress</div>
-                <div><textarea name="adress" ></textarea></div>
+                <div class="form-group">
+                    <label for="Adress">Adress</label>
+                    <textarea class="form-control" id="Adress" name="Adress" rows="4"></textarea>
+                </div>
                 <button type="submit" class="btn btn-warning">
                     Finalize Order
                 </button>

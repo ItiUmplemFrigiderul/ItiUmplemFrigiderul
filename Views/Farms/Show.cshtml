@@ -55,9 +55,35 @@
                             <p>Rating: @prod.Rating <i class="fa-solid fa-star text-warning"></i></p>
                             <div class="d-flex justify-content-between">
                                 <a class="btn btn-outline-primary" asp-controller="FarmProducts" asp-action="Show" asp-route-id="@prod.Id">Details</a>
-                                <form method="post" asp-controller="Carts" asp-action="Add" asp-route-id="@prod.Id">
-                                    <button class="btn btn-outline-success">Add to Cart</button>
-                                </form>
+                                @if (prod.Stock >= 1)
+                                {
+                                    <form method="post" asp-controller="Carts" asp-action="Add" asp-route-id="@prod.Id">
+                                        <button class="btn btn-outline-success">Add to Cart</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <p>Out of stock</p>
+                                }
+                                @if(ViewBag.UserCurent == prod.Farm.UserId || ViewBag.EsteAdmin)
+                                {
+                                    @if (@prod.Verified)
+                                    {
+                                        <p> Verficat</p>
+                                    }
+                                    else if (ViewBag.EsteAdmin)
+                                    {
+                                        <form method="post" asp-controller="FarmProducts" asp-action="Verify" asp-route-id="@prod.Id">
+
+                                            <button class="btn btn-outline-primary" type="submit">Verifica</button>
+
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">Neverficat</span>
+                                    }
+                                }
                             </div>
                         </div>
                     </div>

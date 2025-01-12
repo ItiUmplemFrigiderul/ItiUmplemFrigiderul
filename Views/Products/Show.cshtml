@@ -22,6 +22,15 @@
             <div class="col-md-7">
                 <h2 class="text-danger">@Model.Name</h2>
                 <p class="text-muted mt-3">@Model.Description</p>
+                @if (ViewBag.EsteAdmin)
+                {
+                    <div class="d-flex flex-row align-items-center justify-content-between mt-4">
+                        <a class="btn btn-outline-primary" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                        <form method="post" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Id">
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                }
                 <hr>
                 <div class="d-flex flex-row align-items-center justify-content-between">
                     
@@ -51,11 +60,18 @@
                                 <a class="btn btn-outline-primary mb-2" asp-controller="FarmProducts" asp-action="Show" asp-route-id="@prod.Id">
                                     <i class="fa-solid fa-info-circle"></i> Details
                                 </a>
-                                <form method="post" asp-controller="Carts" asp-action="Add" asp-route-id="@prod.Id">
-                                    <button class="btn btn-success">
-                                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                                    </button>
-                                </form>
+                                @if (prod.Stock >= 1)
+                                {
+                                    <form method="post" asp-controller="Carts" asp-action="Add" asp-route-id="@prod.Id">
+                                        <button class="btn btn-success">
+                                            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <p>Out of stock</p>
+                                }
                             </div>
                         </div>
                     </div>

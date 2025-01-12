@@ -110,6 +110,7 @@ namespace ItiUmplemFrigiderul.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FinalizeOrder(string adress)
@@ -183,5 +184,16 @@ namespace ItiUmplemFrigiderul.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var cart = await _db.Carts.FindAsync(id);
+            _db.Carts.Remove(cart);
+            TempData["message"] = "Product has been removed from cart successfully.";
+            TempData["messageType"] = "alert-success";
+            await _db.SaveChangesAsync();
+            return RedirectToAction("Index", "Carts", new { id = cart.UserId });
+        }
     }
 }
