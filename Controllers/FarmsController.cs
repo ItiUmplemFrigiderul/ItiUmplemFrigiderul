@@ -142,8 +142,9 @@ namespace ItiUmplemFrigiderul.Controllers
         [Authorize(Roles = "Collaborator, Admin")]
         public IActionResult Delete(int id)
         {
+            SetAccessRights();
             var farm = db.Farms.FirstOrDefault(f => f.Id == id);
-            if (ViewBag.EsteAdmin || farm.User == ViewBag.UserCurent)
+            if (ViewBag.EsteAdmin || farm.UserId == ViewBag.UserCurent)
             {
                 if (farm == null)
                 {

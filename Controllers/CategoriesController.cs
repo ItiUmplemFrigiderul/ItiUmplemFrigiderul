@@ -154,6 +154,8 @@ namespace ItiUmplemFrigiderul.Controllers
         {
             var category = await _db.Categories.FindAsync(id);
             _db.Categories.Remove(category);
+            TempData["message"] = "Category has been deleted successfully.";
+            TempData["messageType"] = "alert-success";
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
