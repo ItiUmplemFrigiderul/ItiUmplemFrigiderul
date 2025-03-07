@@ -21,8 +21,8 @@ Follow these steps to clone and run the project locally:
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/ItiUmplemFrigiderul/ItiUmplemFrigiderul
+cd ItiUmplemFrigiderul
 ```
 
 ### 2️⃣ Configure the Database
@@ -42,10 +42,10 @@ dotnet ef database update
 ```bash
 dotnet run
 ```
-The app should now be accessible at `http://localhost:5000/`.
+The app should now be accessible at `http://localhost:5174/`.
 
 ## ✅ Running the Project in Visual Studio
-1. Open the solution (`.sln`) file in **Visual Studio**.
-2. Set the project as the **Startup Project**.
+1. Open the solution file `ItiUmplemFrigiderul.sln` in **Visual Studio**.
+2. Set `ItiUmplemFrigiderul` as the **Startup Project**.
 3. Press `F5` to build and run the application.
 
